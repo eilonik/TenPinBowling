@@ -1,17 +1,42 @@
+const Deque = require('collections/deque');
 module.exports = class Game {
     constructor(players) {
-        // Create Dqueue from players
+        if (!players || players.length === 0) {
+            throw new Error("Invalid arguments");
+        }
+        this.players = players;
+        this.queue = new Deque(players);
+        this.currentPlayer = this.queue.shift();
     }
 
     play(frame) {
-
+        if (!frame) {
+            throw new Error("Invalid frame");
+        }
+        if (this.isDone()) {
+            throw new Error("Move after game is over");
+        }
+        const play = this.currentPlayer.play(frame);
+        if (!this.currentPlayer.isDone()) {
+            this.queue.push(this.currentPlayer);
+        }
+        this.currentPlayer = this.queue.shift();
+        return play;
     }
 
     isDone() {
-        return false;
+        return !this.currentPlayer;
     }
 
     getScoreBoard() {
+        this.players.sort((a, b) => b.getScore() - a.getScore());
+        return this.players.map(el => el.minimize());
+        // const firstPlace = board[0];
+        // firstPlace.name = '🏆 ' + firstPlace.name + ' 🏆';
+        // return board; 
+    }
 
+    getCurrentPlayer() {
+        return this?.currentPlayer.getName();
     }
 }

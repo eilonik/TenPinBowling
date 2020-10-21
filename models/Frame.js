@@ -72,5 +72,9 @@ module.exports = class Frame {
     size() {
         return this.scores.length;
     }
+
+    toString() {
+        return this.stringScores.join(",");
+    }
     
 }

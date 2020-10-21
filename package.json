@@ -18,5 +18,8 @@
   "homepage": "https://github.com/eilonik/TenPinBowling#readme",
   "devDependencies": {
     "mocha": "^8.2.0"
+  },
+  "dependencies": {
+    "collections": "^5.1.12"
   }
 }

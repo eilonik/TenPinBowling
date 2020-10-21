@@ -14,6 +14,13 @@ module.exports = class Player {
             TWO_STRIKES: 3,
             OPEN: 4,
         };
+
+        this.consts = {
+            LAST_ROUND: 9,
+            NORMAL_FRAME_SIZE: 2,
+            LAST_FRAME_SIZE: 3,
+            THREE_STRIKES_SCORE: 30
+        };
     }
 
     play(frame) {
@@ -24,6 +31,10 @@ module.exports = class Player {
 
         if (!frame) {
             throw new Error('Invalid frame');
+        }
+
+        if (frame.size() > this.consts.NORMAL_FRAME_SIZE && this.getCurrentFrame() !== this.consts.LAST_ROUND) {
+            throw new Error('Invalid frame, size > 2 before last round');
         }
 
         let state = this.getState();
@@ -58,12 +69,12 @@ module.exports = class Player {
             case this.states.TWO_STRIKES: {
                 let secondPending = this.pendingFrames.pop();
                 let firstPending = this.pendingFrames.pop();
-                if (frame.isStrike() && frame.size() < 3) {
-                    this.score += 30;
+                if (frame.isStrike() && frame.size() <= this.consts.NORMAL_FRAME_SIZE) {
+                    this.score += this.consts.THREE_STRIKES_SCORE;
                     this.frames.push(firstPending);
                     this.pendingFrames.push(secondPending, frame);
                 } else  {
-                    this.score += 30 + (2 * frame.getFirst()) + frame.getSecond();
+                    this.score += this.consts.THREE_STRIKES_SCORE + (2 * frame.getFirst()) + frame.getSecond();
                     this.frames.push(firstPending, secondPending);
                     this.processFrame(frame);
                 }
@@ -72,7 +83,7 @@ module.exports = class Player {
         }
 
         if (this.isLastFrame()) {
-            if (!frame.isOpen() && frame.size() !== 3) {
+            if (!frame.isOpen() && frame.size() !== this.consts.LAST_FRAME_SIZE) {
                 throw new Error('Invalid input - non-open 10th frame must have 3 throws');
             }
             this.score += frame.getScore();
@@ -124,6 +135,22 @@ module.exports = class Player {
         } else {
             this.pendingFrames.push(frame);
         }
+    }
+
+    getName() {
+        return this.name;
+    }
+
+    formatFrames() {
+        return this.frames.map(el => el.toString()).join("  ");
+    }
+
+    minimize() {
+        return {
+            name: this.name,
+            score: this.score,
+            frames: this.formatFrames()
+        };
     }
 
 }
