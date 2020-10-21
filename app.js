@@ -5,6 +5,7 @@ const validators = require('./utils/validators');
 const readline = require("readline");
 const Colors = require('./utils/constants').Colors;
 
+
 const createPrompt = () => {
     return readline.createInterface({
         input: process.stdin,
