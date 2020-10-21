@@ -16,7 +16,7 @@ Bash:
 
 Docker:
 1. docker pull starsig/tenpinbowling:0.0.1 
-2. docker run -it <container_id>
+2. docker run -it starsig/tenpinbowling:0.0.1
 
 ============
 
