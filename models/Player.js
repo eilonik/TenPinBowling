@@ -37,6 +37,10 @@ module.exports = class Player {
             throw new Error('Invalid frame, size > 2 before last round');
         }
 
+        if (!frame.isOpen() && this.getCurrentFrame() === this.consts.LAST_ROUND && frame.size() !== this.consts.LAST_FRAME_SIZE) {
+            throw new Error('Invalid frame for last round');
+        }
+
         let state = this.getState();
         
         switch (state) {
@@ -107,7 +111,7 @@ module.exports = class Player {
     }
 
     isDone() {
-        return (this.frames.length === 10);
+        return (this.getCurrentFrame() === 10);
     }
 
     getState() {

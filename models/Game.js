@@ -31,9 +31,6 @@ module.exports = class Game {
     getScoreBoard() {
         this.players.sort((a, b) => b.getScore() - a.getScore());
         return this.players.map(el => el.minimize());
-        // const firstPlace = board[0];
-        // firstPlace.name = '🏆 ' + firstPlace.name + ' 🏆';
-        // return board; 
     }
 
     getCurrentPlayer() {
