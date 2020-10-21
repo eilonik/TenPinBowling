@@ -1,10 +1,12 @@
 #TenPinBowling
 
 ============
+
 Description:
 Multi-player bowling game.
 
 =============
+
 Setup:
 
 Bash:
@@ -16,11 +18,13 @@ Docker:
 2. docker run -it <container_id>
 
 ============
+
 Testing:
 
 npm test
 
 ============
+
 Usage:
 
 You will first be asked to enter the names of the players, or hit enter
