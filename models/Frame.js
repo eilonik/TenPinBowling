@@ -1,8 +1,7 @@
+const Errors = require('../utils/constants').Errors;
 module.exports = class Frame {
     constructor(scores) {
-        if (!scores || scores.length > 3 || scores.length < 1) {
-            throw new Error('Invalid input');
-        }
+        this.validateInput(scores);
         this.scores = [];
         this.stringScores = [];
         this.score = 0;
@@ -12,41 +11,14 @@ module.exports = class Frame {
             let score = scores[i].toString().toUpperCase();
             this.stringScores.push(score);
             if (score === 'X') {
-                // check if it is a strike not on the last frame, or on the last frame
-                // where not all throws are strike
-                // prior to the current location
-                // scores.length === 2 is also an invalid input
-                if ((scores.length === 3 && i !== 0 && this.score !== (10 * i)) || scores.length === 2) {
-                    throw new Error('Invalid strike');
-                }
-                this.scores[i] = 10;
-                this.score += 10;
-                this._isStrike = true;
-                this._isOpen = false;
+                this.processStrike(scores, i);
             } else if (score === '/') {
-                if (i === 0) {
-                    throw new Error('Invalid pins');
-                }
-                this.score = 10;
-                this.scores[i] = 10 - this.scores[i - 1];
-                this._isOpen = false;
+                this.processSpare(i);
             } else {
-                score = parseInt(score);
-                if (score < 0 || score > 9) {
-                    throw new Error('Invalid number of pins');
-                }
-                this.scores[i] = score;
-                this.score += score;
+                this.processOpen(score, i);
             }
         }
-
-        if (this.score > 10 && scores.length !== 3) {
-            throw new Error('Invalid frame');
-        }
-
-        if (scores.length === 1 && scores[0].toString().toUpperCase() !== 'X') {
-            throw new Error('Invalid frame');
-        }
+        this.validateFrame(scores);
     }
 
     isOpen() {
@@ -76,5 +48,64 @@ module.exports = class Frame {
     toString() {
         return this.stringScores.join(",");
     }
-    
+
+    // check if it is a strike not on the last frame, or on the last frame
+    // where not all throws are strike
+    // prior to the current location
+    // scores.length === 2 is also an invalid input
+    validateStrike(scores, index) {
+        if ((scores.length === 3 && index !== 0 && this.score !== (10 * index)) || scores.length === 2) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+    }
+
+    validateSpare(index) {
+        if (index === 0) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+    }
+
+    validateOpen(score) {
+        if (score < 0 || score > 9) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+    }
+
+    validateFrame(scores) {
+        if (this.score > 10 && scores.length !== 3) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+
+        if (scores.length === 1 && scores[0].toString().toUpperCase() !== 'X') {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+    }
+
+    validateInput(scores) {
+        if (!scores || scores.length > 3 || scores.length < 1) {
+            throw new Error(Errors.INVALID_ARGUMENTS);
+        }
+    }
+
+    processStrike(scores, index) {
+        this.validateStrike(scores, index);
+        this.scores[index] = 10;
+        this.score += 10;
+        this._isStrike = true;
+        this._isOpen = false;
+    }
+
+    processSpare(index) {
+        this.validateSpare(index);
+        this.score = 10;
+        this.scores[index] = 10 - this.scores[index - 1];
+        this._isOpen = false;
+    }
+
+    processOpen(score, index) {
+        score = parseInt(score);
+        this.validateOpen(score);
+        this.scores[index] = score;
+        this.score += score;
+    }
 }

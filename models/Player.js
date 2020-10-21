@@ -1,4 +1,7 @@
+const {Consts, States} = require('../utils/constants').Player;
+const Errors = require('../utils/constants').Errors;
 module.exports = class Player {
+    
     constructor(name) {
         if (!name) {
             throw new Error("Invalid name!");
@@ -7,91 +10,38 @@ module.exports = class Player {
         this.score = 0;
         this.frames = [];
         this.pendingFrames = [];
-
-        this.states = {
-            ONE_STRIKE: 1,
-            ONE_SPARE: 2,
-            TWO_STRIKES: 3,
-            OPEN: 4,
-        };
-
-        this.consts = {
-            LAST_ROUND: 9,
-            NORMAL_FRAME_SIZE: 2,
-            LAST_FRAME_SIZE: 3,
-            THREE_STRIKES_SCORE: 30
-        };
     }
 
     play(frame) {
-
-        if (this.isDone()) {
-            throw new Error('Maximum frames excceeded');
-        }
-
-        if (!frame) {
-            throw new Error('Invalid frame');
-        }
-
-        if (frame.size() > this.consts.NORMAL_FRAME_SIZE && this.getCurrentFrame() !== this.consts.LAST_ROUND) {
-            throw new Error('Invalid frame, size > 2 before last round');
-        }
-
-        if (!frame.isOpen() && this.getCurrentFrame() === this.consts.LAST_ROUND && frame.size() !== this.consts.LAST_FRAME_SIZE) {
-            throw new Error('Invalid frame for last round');
-        }
-
+        this.validateFrame(frame);
         let state = this.getState();
-        
         switch (state) {
-            case this.states.OPEN: {
+            case States.OPEN: {
                 this.processFrame(frame);    
                 break;
             }
             
-            case this.states.ONE_STRIKE: {
-
-                let pendingFrame = this.pendingFrames.pop();
-                if (frame.isStrike()) {
-                    this.pendingFrames.push(pendingFrame, frame);
-                } else {
-                    this.score += pendingFrame.getScore() + frame.getScore();
-                    this.frames.push(pendingFrame);
-                    this.processFrame(frame);
-                }
+            case States.ONE_STRIKE: {
+                this.processFrameOneStrike(frame);
                 break;
             }
 
-            case this.states.ONE_SPARE: {
-                let pendingFrame = this.pendingFrames.pop();
-                this.score += pendingFrame.getScore() + frame.getFirst();
-                this.frames.push(pendingFrame);
-                this.processFrame(frame);
+            case States.ONE_SPARE: {
+                this.processFrameOneSpare(frame);
                 break;
             }
 
-            case this.states.TWO_STRIKES: {
-                let secondPending = this.pendingFrames.pop();
-                let firstPending = this.pendingFrames.pop();
-                if (frame.isStrike() && frame.size() <= this.consts.NORMAL_FRAME_SIZE) {
-                    this.score += this.consts.THREE_STRIKES_SCORE;
-                    this.frames.push(firstPending);
-                    this.pendingFrames.push(secondPending, frame);
-                } else  {
-                    this.score += this.consts.THREE_STRIKES_SCORE + (2 * frame.getFirst()) + frame.getSecond();
-                    this.frames.push(firstPending, secondPending);
-                    this.processFrame(frame);
-                }
+            case States.TWO_STRIKES: {
+                this.processFrameTwoStrikes(frame);
                 break;
             }
         }
 
         if (this.isLastFrame()) {
-            if (!frame.isOpen() && frame.size() !== this.consts.LAST_FRAME_SIZE) {
-                throw new Error('Invalid input - non-open 10th frame must have 3 throws');
+            if (!frame.isOpen() && frame.size() !== Consts.LAST_FRAME_SIZE) {
+                throw new Error(Errors.INVALID_LAST_FRAME);
             }
             this.score += frame.getScore();
-
         }
 
         return {
@@ -117,15 +67,15 @@ module.exports = class Player {
     getState() {
         let length = this.pendingFrames.length;
         if (length === 2) {
-            return this.states.TWO_STRIKES;
+            return States.TWO_STRIKES;
         } else if(length === 1) {
             if (this.pendingFrames[0].isStrike()) {
-                return this.states.ONE_STRIKE;
+                return States.ONE_STRIKE;
             } else {
-                return this.states.ONE_SPARE;
+                return States.ONE_SPARE;
             }
         }
-        return this.states.OPEN;
+        return States.OPEN;
     }
 
     getScore() {
@@ -137,7 +87,11 @@ module.exports = class Player {
             this.score += frame.getScore();
             this.frames.push(frame);
         } else {
-            this.pendingFrames.push(frame);
+            if (this.getCurrentFrame() === 9) {
+                this.frames.push(frame);
+            } else {
+                this.pendingFrames.push(frame);
+            }
         }
     }
 
@@ -157,4 +111,53 @@ module.exports = class Player {
         };
     }
 
+    validateFrame(frame) {
+        if (this.isDone()) {
+            throw new Error(Errors.MAX_FRAMES_EXCEEDED);
+        }
+
+        if (!frame) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+
+        if (frame.size() > Consts.NORMAL_FRAME_SIZE && this.getCurrentFrame() !== Consts.LAST_ROUND) {
+            throw new Error(Errors.INVALID_FRAME_SIZE);
+        }
+
+        if (!frame.isOpen() && this.getCurrentFrame() === Consts.LAST_ROUND && frame.size() !== Consts.LAST_FRAME_SIZE) {
+            throw new Error(Errors.INVALID_LAST_FRAME);
+        }
+    }
+
+    processFrameOneStrike(frame) {
+        let pendingFrame = this.pendingFrames.pop();
+        if (frame.isStrike()) {
+            this.pendingFrames.push(pendingFrame, frame);
+        } else {
+            this.score += pendingFrame.getScore() + frame.getScore();
+            this.frames.push(pendingFrame);
+            this.processFrame(frame);
+        }
+    }
+
+    processFrameOneSpare(frame) {
+        let pendingFrame = this.pendingFrames.pop();
+        this.score += pendingFrame.getScore() + frame.getFirst();
+        this.frames.push(pendingFrame);
+        this.processFrame(frame);
+    }
+
+    processFrameTwoStrikes(frame) {
+        let secondPending = this.pendingFrames.pop();
+        let firstPending = this.pendingFrames.pop();
+        if (frame.isStrike() && frame.size() <= Consts.NORMAL_FRAME_SIZE) {
+            this.score += Consts.THREE_STRIKES_SCORE;
+            this.frames.push(firstPending);
+            this.pendingFrames.push(secondPending, frame);
+        } else  {
+            this.score += Consts.THREE_STRIKES_SCORE + (2 * frame.getFirst()) + frame.getSecond();
+            this.frames.push(firstPending, secondPending);
+            this.processFrame(frame);
+        }
+    }
 }

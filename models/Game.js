@@ -1,8 +1,10 @@
 const Deque = require('collections/deque');
+const Errors = require('../utils/constants').Errors;
+
 module.exports = class Game {
     constructor(players) {
         if (!players || players.length === 0) {
-            throw new Error("Invalid arguments");
+            throw new Error(Errors.INVALID_ARGUMENTS);
         }
         this.players = players;
         this.queue = new Deque(players);
@@ -11,10 +13,10 @@ module.exports = class Game {
 
     play(frame) {
         if (!frame) {
-            throw new Error("Invalid frame");
+            throw new Error(Errors.INVALID_FRAME);
         }
         if (this.isDone()) {
-            throw new Error("Move after game is over");
+            throw new Error(Errors.MOVE_AFTER_GAME_OVER);
         }
         const play = this.currentPlayer.play(frame);
         if (!this.currentPlayer.isDone()) {

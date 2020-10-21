@@ -28,5 +28,8 @@ describe("Validators", function(){
         it("Should return true for an empty array", function() {
             assert.equal(validators.uniqueArray([]), true);
         });
+        it("Should return false for empty strings", function() {
+            assert.equal(validators.uniqueArray([,,]), false);
+        });
     });
 });

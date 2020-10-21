@@ -2,6 +2,7 @@ const assert = require('assert');
 const Player = require('../../models/Player')
 const Frame = require('../../models/Frame')
 const expectException = require('../helpers').expectException;
+const {States} = require('../../utils/constants').Player;
 
 
 describe("Player", function() {
@@ -137,14 +138,14 @@ describe("Player", function() {
                 let player = new Player("Player");
                 let frame = new Frame([1,2]);
                 player.play(frame);
-                assert.equal(player.getState(), player.states.OPEN);
+                assert.equal(player.getState(), States.OPEN);
             });
             
             it("should be ONE_STRIKE after a strike", function() {
                 let player = new Player("Player");
                 let frame = new Frame(['X']);
                 player.play(frame);
-                assert.equal(player.getState(), player.states.ONE_STRIKE);
+                assert.equal(player.getState(), States.ONE_STRIKE);
             });
     
             it("should be TWO_STRIKES after 2 strikes", function() {
@@ -152,14 +153,14 @@ describe("Player", function() {
                 let frame = new Frame(['X']);
                 player.play(frame);
                 player.play(frame);
-                assert.equal(player.getState(), player.states.TWO_STRIKES);
+                assert.equal(player.getState(), States.TWO_STRIKES);
             });
     
             it("should be ONE_SPARE after a spare", function() {
                 let player = new Player("Player");
                 let frame = new Frame(['1', '/']);
                 player.play(frame);
-                assert.equal(player.getState(), player.states.ONE_SPARE);
+                assert.equal(player.getState(), States.ONE_SPARE);
             });
     
             it("should be OPEN after a strike followed by an open frame", function() {
@@ -168,7 +169,7 @@ describe("Player", function() {
                 let openFrame = new Frame(['1', '2']);
                 player.play(strike);
                 player.play(openFrame);
-                assert.equal(player.getState(), player.states.OPEN);
+                assert.equal(player.getState(), States.OPEN);
             });
     
             it("should be ONE_SPARE after a strike followed by a spare", function() {
@@ -177,7 +178,7 @@ describe("Player", function() {
                 let spare = new Frame(['1', '/']);
                 player.play(strike);
                 player.play(spare);
-                assert.equal(player.getState(), player.states.ONE_SPARE);
+                assert.equal(player.getState(), States.ONE_SPARE);
             });
         });
     
