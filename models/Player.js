@@ -4,7 +4,7 @@ module.exports = class Player {
     
     constructor(name) {
         if (!name) {
-            throw new Error("Invalid name!");
+            throw new Error(Errors.INVALID_ARGUMENTS);
         }
         this.name = name;
         this.score = 0;
