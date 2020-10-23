@@ -15,6 +15,14 @@ module.exports = {
             THREE_STRIKES_SCORE: 30,
         },
     },
+
+    Frame: {
+        Consts: {
+            CLOSED_FRAME_SCORE: 10,
+            LAST_CLOSED_SIZE: 3,
+            OPEN_FRAME_SIZE: 2,
+        },
+    },
     
     Errors: {
         MAX_FRAMES_EXCEEDED: 'Maximum frames excceeded',
@@ -29,7 +37,8 @@ module.exports = {
             CYAN: "\x1b[36m",
             RESET: "\x1b[0m",
             ERROR: "\x1b[41m",
-            MESSAGE: "\x1b[46m\x1b[31m"
+            MESSAGE: "\x1b[46m\x1b[31m",
+            PROMPT: "\x1b[32m"
         },
         Consts: {
             THEME_ELEMENT: "🎳"

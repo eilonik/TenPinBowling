@@ -6,7 +6,7 @@ const Game = require('./models/Game');
 
 const namesMsg = "Please enter players seperated by comma, or leave blank for a single player";
 const frameMsg = "Please enter a frame, moves seperated by a comma";
-const gameOverMsg = "GAME OVER!";
+const gameOverMsg = "=====GAME OVER!=====";
 
 IO.greeting();
 
@@ -18,8 +18,9 @@ const playGame = (names) => {
 
         // break down
         try {
-            const frame = new Frame(input);
-            console.table([game.play(frame)], frameFields);
+            const _frame = new Frame(input);
+            const {player, frame, score} = game.play(_frame);
+            IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
         } catch (e) {
             IO.error(e.message);
             return false;
@@ -30,7 +31,7 @@ const playGame = (names) => {
             IO.message(gameOverMsg);
             const board = game.getScoreBoard();
             board[0].player = "🏆 " + board[0].player + " 🏆";
-            console.table(board);
+            IO.table(board, gameOverMsg);
             process.exit();
         }
         IO.read(IO.createPrompt(), frameMsg, readFrame, readFrame);

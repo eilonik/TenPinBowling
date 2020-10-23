@@ -1,4 +1,5 @@
 const Errors = require('../utils/constants').Errors;
+const Consts = require('../utils/constants').Frame.Consts;
 module.exports = class Frame {
 
     constructor(scores) {
@@ -59,7 +60,12 @@ module.exports = class Frame {
     // prior to the current location
     // scores.length === 2 is also an invalid input
     validateStrike(scores, index) {
-        if ((scores.length === 3 && index !== 0 && this.score !== (10 * index)) || scores.length === 2) {
+        if ((scores.length === Consts.LAST_CLOSED_SIZE && index !== 0 && 
+            this.score !== (Consts.CLOSED_FRAME_SCORE * index))) {
+            throw new Error(Errors.INVALID_FRAME);
+        }
+        
+        if (scores.length === Consts.OPEN_FRAME_SIZE) {
             throw new Error(Errors.INVALID_FRAME);
         }
     }
@@ -77,7 +83,7 @@ module.exports = class Frame {
     }
 
     validateFrame(scores) {
-        if (this.score > 10 && scores.length !== 3) {
+        if (this.score > Consts.CLOSED_FRAME_SCORE && scores.length !== Consts.LAST_CLOSED_SIZE) {
             throw new Error(Errors.INVALID_FRAME);
         }
 
@@ -94,16 +100,16 @@ module.exports = class Frame {
 
     processStrike(scores, index) {
         this.validateStrike(scores, index);
-        this.scores[index] = 10;
-        this.score += 10;
+        this.scores[index] = Consts.CLOSED_FRAME_SCORE;
+        this.score += Consts.CLOSED_FRAME_SCORE;
         this._isStrike = true;
         this._isOpen = false;
     }
 
     processSpare(index) {
         this.validateSpare(index);
-        this.score = 10;
-        this.scores[index] = 10 - this.scores[index - 1];
+        this.score = Consts.CLOSED_FRAME_SCORE;
+        this.scores[index] = Consts.CLOSED_FRAME_SCORE - this.scores[index - 1];
         this._isOpen = false;
     }
 

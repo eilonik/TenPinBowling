@@ -8,39 +8,80 @@ const processInput = (input) => {
     return input.toString().split(",").map(el => el.replace(/\s/g, ''));
 };
 
-const centeredMessageStart = (length) => {
+const centeredMessagePrefix = (length) => {
 return " ".repeat(Math.max((process.stdout.columns - length) / 2, 0));
 }
 
-const greeting = (color = Colors.CYAN) => {
-    const horizontalFrame = Consts.THEME_ELEMENT.repeat(52);
-    const verticalFrame = Consts.THEME_ELEMENT.repeat(2);
-    const messagePadding = centeredMessageStart(100);
-    console.log(messagePadding + horizontalFrame);
-    console.log(messagePadding + horizontalFrame);
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, "   #     ###       ######  ### #     #     ######  ####### #     # #       ### #     #  #####   ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, "  ##    #   #      #     #  #  ##    #     #     # #     # #  #  # #        #  ##    # #     #  ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, " # #   #     #     #     #  #  # #   #     #     # #     # #  #  # #        #  # #   # #        ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, "   #   #     #     ######   #  #  #  #     ######  #     # #  #  # #        #  #  #  # #  ####  ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, "   #   #     #     #        #  #   # #     #     # #     # #  #  # #        #  #   # # #     #  ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, "   #    #   #      #        #  #    ##     #     # #     # #  #  # #        #  #    ## #     #  ");
-    console.log(messagePadding + color + verticalFrame + "%s" + verticalFrame + Colors.RESET, " #####   ###       #       ### #     #     ######  #######  ## ##  ####### ### #     #  #####   ");
-    console.log(messagePadding + horizontalFrame);
-    console.log(messagePadding + horizontalFrame);
-    console.log();
+const greeting = () => {
+    const rows = [
+        "   #     ###       ######  ### #     #     ######  ####### #     # #       ### #     #  #####   ",
+        "  ##    #   #      #     #  #  ##    #     #     # #     # #  #  # #        #  ##    # #     #  ",
+        " # #   #     #     #     #  #  # #   #     #     # #     # #  #  # #        #  # #   # #        ",
+        "   #   #     #     ######   #  #  #  #     ######  #     # #  #  # #        #  #  #  # #  ####  ",
+        "   #   #     #     #        #  #   # #     #     # #     # #  #  # #        #  #   # # #     #  ",
+        "   #    #   #      #        #  #    ##     #     # #     # #  #  # #        #  #    ## #     #  ",
+        " #####   ###       #       ### #     #     ######  #######  ## ##  ####### ### #     #  #####   "
+    ];
+    message(rows);
+    return;
 };
 
 const error = (msg) => {
-    console.log(Colors.ERROR + "%s" + Colors.RESET, msg);
+    const padding = centeredMessagePrefix(msg.length);
+    console.log(padding + Colors.ERROR + "%s" + Colors.RESET, msg);
 }
 
 const message = (msg) => {
-    const frame = new Array(Math.ceil(msg.length / 2) + 3).fill(Consts.THEME_ELEMENT).join("");
-    const padding = centeredMessageStart(frame.length);
+    let length;
+    if (Array.isArray(msg)) {
+        length = msg[0].length;
+    } else {
+        length = msg.length;
+        msg = [msg];
+    }
+    const frameLength = Math.ceil(length / 2) + 3;
+    const centerPadding = (length % 2) ? " " : ""; 
+    const frame = new Array(frameLength).fill(Consts.THEME_ELEMENT).join("");
+    const padding = centeredMessagePrefix(frame.length);
+    console.log();
     console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
-    console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, Consts.THEME_ELEMENT + " " + msg + " " + Consts.THEME_ELEMENT);
+    for (let row of msg) {
+        console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, Consts.THEME_ELEMENT + " " + row + " " + centerPadding + Consts.THEME_ELEMENT);
+    }
     console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
+    console.log();
 }
+
+const padString = (str, pad) => {
+    const paddingPrefix = str.length + Math.ceil((pad - str.length) / 2);
+    const paddingSuffix = pad;
+    return str.padStart(paddingPrefix, " ").padEnd(paddingSuffix, " ")
+}
+
+const table = (rows, title = "") => {
+    const titles = Object.keys(rows[0]);
+    const maxLengthMap = {};
+    // Create a map of maximum field lengths
+    const padTitles = [];
+    const readyRows = [];
+    for (let title of titles) {
+        let map = rows.map(el => el[title].toString().length);
+        maxLengthMap[title] = Math.max(...map, title.length) + 1;
+        padTitles.push(padString(title, maxLengthMap[title])); 
+    }
+
+    const titlesRow = padTitles.join("|");
+    readyRows.push(titlesRow);
+    readyRows.push("=".repeat(titlesRow.length));
+    for (const row of rows) {
+        const currentRow = [];
+        for (const title of titles) {
+            currentRow.push(padString(row[title].toString(), maxLengthMap[title])); 
+        }
+        readyRows.push(currentRow.join("|"));
+    }
+    message(readyRows);
+};
 
 const createPrompt = () => {
     return readline.createInterface({
@@ -50,7 +91,8 @@ const createPrompt = () => {
 }
 
 const read = (channel, question, cb, next = null) => {
-    channel.setPrompt(question + "> ");
+
+    channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
     channel.prompt();
     channel.on('line', (input) => {
         input = processInput(input);
@@ -72,3 +114,4 @@ module.exports.createPrompt =createPrompt;
 module.exports.read = read;
 module.exports.error = error;
 module.exports.message = message;
+module.exports.table = table;
