@@ -40,8 +40,17 @@ module.exports = {
             MESSAGE: "\x1b[46m\x1b[31m",
             PROMPT: "\x1b[32m"
         },
-        Consts: {
-            THEME_ELEMENT: "🎳"
-        }
+        THEME_ELEMENT: "🎳",
+        GREETING_MESSAGE: [
+            "   #     ###       ######  ### #     #     ######  ####### #     # #       ### #     #  #####   ",
+            "  ##    #   #      #     #  #  ##    #     #     # #     # #  #  # #        #  ##    # #     #  ",
+            " # #   #     #     #     #  #  # #   #     #     # #     # #  #  # #        #  # #   # #        ",
+            "   #   #     #     ######   #  #  #  #     ######  #     # #  #  # #        #  #  #  # #  ####  ",
+            "   #   #     #     #        #  #   # #     #     # #     # #  #  # #        #  #   # # #     #  ",
+            "   #    #   #      #        #  #    ##     #     # #     # #  #  # #        #  #    ## #     #  ",
+            " #####   ###       #       ### #     #     ######  #######  ## ##  ####### ### #     #  #####   "
+        ],
+        PROMPT_NAMES: "Please enter players seperated by comma, or leave blank for a single player",
+        PROMPT_FRAME: "Please enter a frame, moves seperated by a comma"
     }
 };

@@ -1,5 +1,6 @@
 const readline = require("readline");
-const {Colors, Consts} = require('../constants').IO;
+const {Colors} = require('../constants').IO;
+const Consts = require('../constants').IO;
 
 const processInput = (input) => {
     if (!input) {
@@ -9,27 +10,34 @@ const processInput = (input) => {
 };
 
 const centeredMessagePrefix = (length) => {
-return " ".repeat(Math.max((process.stdout.columns - length) / 2, 0));
+    return " ".repeat(Math.max((process.stdout.columns - length) / 2, 0));
 }
 
-const greeting = () => {
-    const rows = [
-        "   #     ###       ######  ### #     #     ######  ####### #     # #       ### #     #  #####   ",
-        "  ##    #   #      #     #  #  ##    #     #     # #     # #  #  # #        #  ##    # #     #  ",
-        " # #   #     #     #     #  #  # #   #     #     # #     # #  #  # #        #  # #   # #        ",
-        "   #   #     #     ######   #  #  #  #     ######  #     # #  #  # #        #  #  #  # #  ####  ",
-        "   #   #     #     #        #  #   # #     #     # #     # #  #  # #        #  #   # # #     #  ",
-        "   #    #   #      #        #  #    ##     #     # #     # #  #  # #        #  #    ## #     #  ",
-        " #####   ###       #       ### #     #     ######  #######  ## ##  ####### ### #     #  #####   "
-    ];
-    message(rows);
-    return;
+const createMessageFrame = (length) => {
+    const frameLength = Math.ceil(length / 2) + 3; 
+    return new Array(frameLength).fill(Consts.THEME_ELEMENT).join("");
 };
+
+const padString = (str, pad) => {
+    const paddingPrefix = str.length + Math.ceil((pad - str.length) / 2);
+    const paddingSuffix = pad;
+    return str.padStart(paddingPrefix, " ").padEnd(paddingSuffix, " ")
+}
 
 const error = (msg) => {
     const padding = centeredMessagePrefix(msg.length);
     console.log(padding + Colors.ERROR + "%s" + Colors.RESET, msg);
 }
+
+const printMsg = (msg, frame, padding, centerPadding) => {
+    console.log();
+    console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
+    for (let row of msg) {
+        console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, Consts.THEME_ELEMENT + " " + row + " " + centerPadding + Consts.THEME_ELEMENT);
+    }
+    console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
+    console.log();
+};
 
 const message = (msg) => {
     let length;
@@ -39,34 +47,21 @@ const message = (msg) => {
         length = msg.length;
         msg = [msg];
     }
-    const frameLength = Math.ceil(length / 2) + 3;
-    const centerPadding = (length % 2) ? " " : ""; 
-    const frame = new Array(frameLength).fill(Consts.THEME_ELEMENT).join("");
+    const frame = createMessageFrame(length);
     const padding = centeredMessagePrefix(frame.length);
-    console.log();
-    console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
-    for (let row of msg) {
-        console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, Consts.THEME_ELEMENT + " " + row + " " + centerPadding + Consts.THEME_ELEMENT);
-    }
-    console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
-    console.log();
+    const centerPadding = (length % 2) ? " " : "";
+    printMsg(msg, frame, padding, centerPadding);
 }
 
-const padString = (str, pad) => {
-    const paddingPrefix = str.length + Math.ceil((pad - str.length) / 2);
-    const paddingSuffix = pad;
-    return str.padStart(paddingPrefix, " ").padEnd(paddingSuffix, " ")
-}
-
-const table = (rows, title = "") => {
+const table = (rows, header = "") => {
     const titles = Object.keys(rows[0]);
     const maxLengthMap = {};
     // Create a map of maximum field lengths
     const padTitles = [];
     const readyRows = [];
     for (let title of titles) {
-        let map = rows.map(el => el[title].toString().length);
-        maxLengthMap[title] = Math.max(...map, title.length) + 1;
+        let lengthMap = rows.map(el => el[title].toString().length);
+        maxLengthMap[title] = Math.max(...lengthMap, title.length) + 1;
         padTitles.push(padString(title, maxLengthMap[title])); 
     }
 
@@ -80,6 +75,10 @@ const table = (rows, title = "") => {
         }
         readyRows.push(currentRow.join("|"));
     }
+    if (header) {
+        readyRows.unshift('-'.repeat(readyRows[0].length));
+        readyRows.unshift(padString(header, readyRows[0].length));
+    }
     message(readyRows);
 };
 
@@ -90,8 +89,8 @@ const createPrompt = () => {
     });
 }
 
-const read = (channel, question, cb, next = null) => {
-
+const read = (question, cb, next = null) => {    
+    const channel = createPrompt();
     channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
     channel.prompt();
     channel.on('line', (input) => {
@@ -108,9 +107,6 @@ const read = (channel, question, cb, next = null) => {
     });    
 };
 
-
-module.exports.greeting = greeting;
-module.exports.createPrompt =createPrompt;
 module.exports.read = read;
 module.exports.error = error;
 module.exports.message = message;
