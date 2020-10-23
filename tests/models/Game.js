@@ -131,7 +131,7 @@ describe("Game", function() {
                 game.play(new Frame([4,2]));
                 const board = game.getScoreBoard();
                 it("should return P2 as the winner (higher on chart)", function() {
-                    assert.equal(board[0].name, 'P2');
+                    assert.equal(board[0].player, 'P2');
                 });
                 it("should have a score of 63", function() {
                     assert.equal(board[0].score, 63);

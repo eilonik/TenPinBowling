@@ -64,41 +64,6 @@ describe("Player", function() {
         });
         
 
-        describe("#isLastFrame()", function() {
-        
-            it("should return true after 10 frames", function() {
-                let player = new Player("Player");
-                let frame = new Frame([1,2]);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                assert.equal(player.isLastFrame(), true);
-            });
-    
-            it("should return false after less than 10 frames", function() {
-                let player = new Player("Player");
-                let frame = new Frame([1,2]);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                player.play(frame);
-                assert.equal(player.isLastFrame(), false);
-            });
-    
-        });
-
         describe("#isDone()", function() {
             it("should return false after less than 10 frames", function() {
                 let player = new Player("Player");
@@ -257,13 +222,6 @@ describe("Player", function() {
                 let frame = new Frame(['X']);
                 player.processFrame(frame);
                 assert.equal(player.getScore(), 0);
-            });
-        });
-    
-        describe("#getName()", function() {
-            it("should return the player's name", function() {
-                let player = new Player("Player");
-                assert.equal(player.getName(), "Player");
             });
         });
     });

@@ -9,11 +9,13 @@ module.exports = {
 
         Consts: {
             LAST_ROUND: 9,
-            NORMAL_FRAME_SIZE: 2,
+            FULL_FRMAES_PLAYED: 10,
+            OPEN_FRAME_SIZE: 2,
             LAST_FRAME_SIZE: 3,
-            THREE_STRIKES_SCORE: 30
+            THREE_STRIKES_SCORE: 30,
         },
     },
+    
     Errors: {
         MAX_FRAMES_EXCEEDED: 'Maximum frames excceeded',
         INVALID_FRAME: 'Invalid frame',
@@ -22,8 +24,15 @@ module.exports = {
         MOVE_AFTER_GAME_OVER: 'Move after game is over',
         INVALID_ARGUMENTS: 'Invalid arguments',
     },
-    Colors: {
-        CYAN: "\x1b[36m",
-        RESET: "\x1b[0m",
+    IO: {
+        Colors: {
+            CYAN: "\x1b[36m",
+            RESET: "\x1b[0m",
+            ERROR: "\x1b[41m",
+            MESSAGE: "\x1b[46m\x1b[31m"
+        },
+        Consts: {
+            THEME_ELEMENT: "🎳"
+        }
     }
 };

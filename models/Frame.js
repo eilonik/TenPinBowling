@@ -1,5 +1,6 @@
 const Errors = require('../utils/constants').Errors;
 module.exports = class Frame {
+
     constructor(scores) {
         this.validateInput(scores);
         this.scores = [];
@@ -7,17 +8,7 @@ module.exports = class Frame {
         this.score = 0;
         this._isOpen = true;
         this._isStrike = false;
-        for (let i = 0; i < scores.length; i++) {
-            let score = scores[i].toString().toUpperCase();
-            this.stringScores.push(score);
-            if (score === 'X') {
-                this.processStrike(scores, i);
-            } else if (score === '/') {
-                this.processSpare(i);
-            } else {
-                this.processOpen(score, i);
-            }
-        }
+        this.parseInput(scores);
         this.validateFrame(scores);
     }
 
@@ -47,6 +38,20 @@ module.exports = class Frame {
 
     toString() {
         return this.stringScores.join(",");
+    }
+
+    parseInput(scores) {
+        for (let i = 0; i < scores.length; i++) {
+            let score = scores[i].toString().toUpperCase();
+            this.stringScores.push(score);
+            if (score === 'X') {
+                this.processStrike(scores, i);
+            } else if (score === '/') {
+                this.processSpare(i);
+            } else {
+                this.processOpen(score, i);
+            }
+        }
     }
 
     // check if it is a strike not on the last frame, or on the last frame
