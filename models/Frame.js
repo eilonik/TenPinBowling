@@ -1,4 +1,4 @@
-const Errors = require('../utils/constants').Errors;
+const Errors = require('../utils/errors')
 const Consts = require('../utils/constants').Frame.Consts;
 module.exports = class Frame {
 
@@ -45,12 +45,16 @@ module.exports = class Frame {
         for (let i = 0; i < scores.length; i++) {
             let score = scores[i].toString().toUpperCase();
             this.stringScores.push(score);
-            if (score === 'X') {
-                this.processStrike(scores, i);
-            } else if (score === '/') {
-                this.processSpare(i);
-            } else {
-                this.processOpen(score, i);
+            switch (score) {
+                case 'X':
+                    this.processStrike(scores, i);
+                    break;
+                case '/':
+                    this.processSpare(i);
+                    break;
+                default:
+                    this.processOpen(score, i);
+                    break;
             }
         }
     }
@@ -62,39 +66,43 @@ module.exports = class Frame {
     validateStrike(scores, index) {
         if ((scores.length === Consts.LAST_CLOSED_SIZE && index !== 0 && 
             this.score !== (Consts.CLOSED_FRAME_SCORE * index))) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME_LAST_STRIKE);
         }
         
         if (scores.length === Consts.OPEN_FRAME_SIZE) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME_STRIKE);
         }
     }
 
     validateSpare(index) {
         if (index === 0) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME_SPARE_FIRST);
         }
     }
 
     validateOpen(score) {
-        if (score < 0 || score > 9) {
-            throw new Error(Errors.INVALID_FRAME);
+        if (isNaN(score) || score < 0 || score > 9) {
+            Errors.throw(Errors.Codes.INVALID_FRAME_SCORE_OUT_OF_RANGE);
         }
     }
 
     validateFrame(scores) {
         if (this.score > Consts.CLOSED_FRAME_SCORE && scores.length !== Consts.LAST_CLOSED_SIZE) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME_SCORE_NON_LAST_FRAME);
         }
 
         if (scores.length === 1 && scores[0].toString().toUpperCase() !== 'X') {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME_SINGLE_ROLE_MUST_BE_STRIKE);
+        }
+
+        if (this.score >= Consts.CLOSED_FRAME_SCORE && this.isOpen()) {
+            Errors.throw(Errors.Codes.INVALID_FRAME_OPEN_SCORE);
         }
     }
 
     validateInput(scores) {
-        if (!scores || scores.length > 3 || scores.length < 1) {
-            throw new Error(Errors.INVALID_ARGUMENTS);
+        if (!scores || scores.length > Consts.LAST_CLOSED_SIZE || scores.length < Consts.STRIKE_SIZE) {
+            Errors.throw(Errors.Codes.INVALID_FRAME_SIZE);
         }
     }
 

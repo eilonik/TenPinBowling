@@ -1,5 +1,5 @@
 const Deque = require('collections/deque');
-const Errors = require('../utils/constants').Errors;
+const Errors = require('../utils/errors');
 
 module.exports = class Game {
     constructor(players) {
@@ -27,16 +27,16 @@ module.exports = class Game {
 
     validateInput(players) {
         if (!players || players.length === 0) {
-            throw new Error(Errors.INVALID_ARGUMENTS);
+            Errors.throw(Errors.Codes.INVALID_ARGUMENTS);
         }
     }
 
     validateMove(frame) {
         if (!frame) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME);
         }
         if (this.isDone()) {
-            throw new Error(Errors.MOVE_AFTER_GAME_OVER);
+            Errors.throw(Errors.Codes.MOVE_AFTER_GAME_OVER);
         }
     }
 

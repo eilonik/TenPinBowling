@@ -1,35 +1,14 @@
 const readline = require("readline");
 const {Colors} = require('../constants').IO;
 const Consts = require('../constants').IO;
-
-const processInput = (input) => {
-    if (!input) {
-        return [];
-    }
-    return input.toString().split(",").map(el => el.replace(/\s/g, ''));
-};
-
-const centeredMessagePrefix = (length) => {
-    return " ".repeat(Math.max((process.stdout.columns - length) / 2, 0));
-}
-
-const createMessageFrame = (length) => {
-    const frameLength = Math.ceil(length / 2) + 3; 
-    return new Array(frameLength).fill(Consts.THEME_ELEMENT).join("");
-};
-
-const padString = (str, pad) => {
-    const paddingPrefix = str.length + Math.ceil((pad - str.length) / 2);
-    const paddingSuffix = pad;
-    return str.padStart(paddingPrefix, " ").padEnd(paddingSuffix, " ")
-}
+const parse = require('./parse');
 
 const error = (msg) => {
-    const padding = centeredMessagePrefix(msg.length);
-    console.log(padding + Colors.ERROR + "%s" + Colors.RESET, msg);
+    const padding = parse.prefix(msg.length);
+    console.log(padding + Colors.ERROR + "%s" + Colors.RESET, "Error: " + msg);
 }
 
-const printMsg = (msg, frame, padding, centerPadding) => {
+const prompt = (msg, frame, padding, centerPadding) => {
     console.log();
     console.log(padding + Colors.MESSAGE + "%s" + Colors.RESET, frame);
     for (let row of msg) {
@@ -47,10 +26,10 @@ const message = (msg) => {
         length = msg.length;
         msg = [msg];
     }
-    const frame = createMessageFrame(length);
-    const padding = centeredMessagePrefix(frame.length);
+    const frame = parse.frame(length);
+    const padding = parse.prefix(frame.length);
     const centerPadding = (length % 2) ? " " : "";
-    printMsg(msg, frame, padding, centerPadding);
+    prompt(msg, frame, padding, centerPadding);
 }
 
 const table = (rows, header = "") => {
@@ -62,7 +41,7 @@ const table = (rows, header = "") => {
     for (let title of titles) {
         let lengthMap = rows.map(el => el[title].toString().length);
         maxLengthMap[title] = Math.max(...lengthMap, title.length) + 1;
-        padTitles.push(padString(title, maxLengthMap[title])); 
+        padTitles.push(parse.pad(title, maxLengthMap[title])); 
     }
 
     const titlesRow = padTitles.join("|");
@@ -71,13 +50,13 @@ const table = (rows, header = "") => {
     for (const row of rows) {
         const currentRow = [];
         for (const title of titles) {
-            currentRow.push(padString(row[title].toString(), maxLengthMap[title])); 
+            currentRow.push(parse.pad(row[title].toString(), maxLengthMap[title])); 
         }
         readyRows.push(currentRow.join("|"));
     }
     if (header) {
         readyRows.unshift('-'.repeat(readyRows[0].length));
-        readyRows.unshift(padString(header, readyRows[0].length));
+        readyRows.unshift(parse.pad(header, readyRows[0].length));
     }
     message(readyRows);
 };
@@ -94,7 +73,7 @@ const read = (question, cb, next = null) => {
     channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
     channel.prompt();
     channel.on('line', (input) => {
-        input = processInput(input);
+        input = parse.list(input);
         done = cb({input, channel});
         if (!done) {
             channel.prompt();

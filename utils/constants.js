@@ -21,16 +21,8 @@ module.exports = {
             CLOSED_FRAME_SCORE: 10,
             LAST_CLOSED_SIZE: 3,
             OPEN_FRAME_SIZE: 2,
+            STRIKE_SIZE: 1,
         },
-    },
-    
-    Errors: {
-        MAX_FRAMES_EXCEEDED: 'Maximum frames excceeded',
-        INVALID_FRAME: 'Invalid frame',
-        INVALID_FRAME_SIZE: 'Invalid frame, size > 2 before last round',
-        INVALID_LAST_FRAME: 'Invalid frame for last round',
-        MOVE_AFTER_GAME_OVER: 'Move after game is over',
-        INVALID_ARGUMENTS: 'Invalid arguments',
     },
     IO: {
         Colors: {

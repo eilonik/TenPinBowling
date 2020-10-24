@@ -1,6 +1,6 @@
 const Frame = require('./Frame');
 const {Consts, States} = require('../utils/constants').Player;
-const Errors = require('../utils/constants').Errors;
+const Errors = require('../utils/errors');
 module.exports = class Player {
     
     constructor(name) {
@@ -31,7 +31,7 @@ module.exports = class Player {
 
         if (this.isDone()) {
             if (!frame.isOpen() && frame.size() !== Consts.LAST_FRAME_SIZE) {
-                throw new Error(Errors.INVALID_LAST_FRAME);
+                throw new Error(Errors.Codes.INVALID_LAST_FRAME);
             }
             this.score += frame.getScore();
         }
@@ -48,18 +48,21 @@ module.exports = class Player {
 
     getState() {
         let length = this.pendingFrames.length;
-        // Explain
-        if (length === 2) {
-            return States.TWO_STRIKES;
-            // Explain
-        } else if(length === 1) {
-            if (this.pendingFrames[0].isStrike()) {
-                return States.ONE_STRIKE;
-            } else {
-                return States.ONE_SPARE;
-            }
+        switch(this.pendingFrames.length) {
+            case 0:
+                return States.OPEN;
+                break;
+            case 1:
+                if (this.pendingFrames[0].isStrike()) {
+                    return States.ONE_STRIKE;
+                } else {
+                    return States.ONE_SPARE;
+                }
+                break;
+            case 2:
+                return States.TWO_STRIKES;
+                break;
         }
-        return States.OPEN;
     }
 
     getScore() {
@@ -70,12 +73,10 @@ module.exports = class Player {
         if (frame.isOpen()) {
             this.score += frame.getScore();
             this.frames.push(frame);
-        } else {
-            if (this.getCurrentFrame() === Consts.LAST_ROUND) {
+        } else if (this.getCurrentFrame() === Consts.LAST_ROUND) {
                 this.frames.push(frame);
-            } else {
-                this.pendingFrames.push(frame);
-            }
+        } else {
+            this.pendingFrames.push(frame);
         }
     }
 
@@ -94,25 +95,25 @@ module.exports = class Player {
 
     validateFrame(frame) {
         if (this.isDone()) {
-            throw new Error(Errors.MAX_FRAMES_EXCEEDED);
+            Errors.throw(Errors.Codes.MAX_FRAMES_EXCEEDED);
         }
 
         if (!frame) {
-            throw new Error(Errors.INVALID_FRAME);
+            Errors.throw(Errors.Codes.INVALID_FRAME);
         }
 
         if (frame.size() > Consts.OPEN_FRAME_SIZE && this.getCurrentFrame() !== Consts.LAST_ROUND) {
-            throw new Error(Errors.INVALID_FRAME_SIZE);
+            Errors.throw(Errors.Codes.INVALID_FRAME_SIZE);
         }
 
         if (!frame.isOpen() && this.getCurrentFrame() === Consts.LAST_ROUND && frame.size() !== Consts.LAST_FRAME_SIZE) {
-            throw new Error(Errors.INVALID_LAST_FRAME);
+            Errors.throw(Errors.Codes.INVALID_LAST_FRAME);
         }
     }
 
     validateName(name) {
         if (!name) {
-            throw new Error(Errors.INVALID_ARGUMENTS);
+            Errors.throw(Errors.Codes.INVALID_ARGUMENTS);
         }
     }
 

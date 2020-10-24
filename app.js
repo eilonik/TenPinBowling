@@ -1,5 +1,6 @@
 const validators = require('./utils/validators');
 const IO = require('./utils/CLI/io');
+const Errors = require('./utils/errors');
 const Player = require('./models/Player');
 const Frame = require('./models/Frame');
 const Game = require('./models/Game');
@@ -14,10 +15,9 @@ const makeMove = (input) => {
 const readNames = ({input}) => {
     if (!validators.notEmpty(input)) {
         input = ["Player"];
-    } else {
-        if (!validators.uniqueArray(input)) {
-            return false;
-        }
+    } else if (!validators.uniqueArray(input)) {
+        IO.error(Errors.Codes.UNIQUE_NAMES);
+        return false;
     }
     return input;
 };
@@ -58,11 +58,14 @@ const formatWinner = (winner) => {
     return "🏆 " + winner + " 🏆";
 };
 
-let game;
-IO.message(Constants.IO.Consts.GREETING_MESSAGE);
+let game; // move to module
+IO.message(Constants.IO.GREETING_MESSAGE);
 IO.read(Constants.IO.PROMPT_NAMES, readNames, playGame);
 
-
+// Add use
+// IO.use(msg, readnames, playgame)
+// IO.use(msg, )
+// Keep last output
 
 
 
