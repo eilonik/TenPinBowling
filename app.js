@@ -6,6 +6,9 @@ const Frame = require('./models/Frame');
 const Game = require('./models/Game');
 const Constants = require('./utils/constants');
 
+const game = new Game();
+// const players = [];
+
 const makeMove = (input) => {
     const _frame = new Frame(input);
     const {player, frame, score} = game.play(_frame);
@@ -38,7 +41,7 @@ const readFrame = ({input, channel}) => {
 
 const playGame = (names) => {
     const players = names.map(name => new Player(name));
-    game = new Game(players);
+    game.init(players);
     IO.read(Constants.IO.PROMPT_FRAME, readFrame);
 }
 
@@ -58,7 +61,6 @@ const formatWinner = (winner) => {
     return "🏆 " + winner + " 🏆";
 };
 
-let game; // move to module
 IO.message(Constants.IO.GREETING_MESSAGE);
 IO.read(Constants.IO.PROMPT_NAMES, readNames, playGame);
 

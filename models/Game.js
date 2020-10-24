@@ -2,7 +2,8 @@ const Deque = require('collections/deque');
 const Errors = require('../utils/errors');
 
 module.exports = class Game {
-    constructor(players) {
+    
+    init(players) {
         this.validateInput(players);
         this.players = players;
         this.queue = new Deque(players);

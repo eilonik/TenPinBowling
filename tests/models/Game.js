@@ -6,16 +6,19 @@ const expectException = require('../helpers').expectException;
 
 describe("Game", function() {
     describe("Invalid inputs", function() {
-        describe("#constructor()", function() {
+        describe("#init()", function() {
+            beforeEach(function () {
+                const game = new Game();
+            })
             it("should fail if the players parameter is null", function() {
                 expectException(function() {
-                    new Game();
+                    game.init();
                 });
             });
 
             it("should fail if the players parameter is an empty array", function() {
                 expectException(function() {
-                    new Game();
+                    game.init([]);
                 });
             });
         });
@@ -23,7 +26,8 @@ describe("Game", function() {
         describe("#play()", function() {
             it("should fail if move is null", function() {
                 expectException(function() {
-                    const game = new Game([new Player("player1")]);
+                    const game = new Game();
+                    game.init([new Player("player1")]);
                     game.play();
                 });
             });
@@ -32,12 +36,17 @@ describe("Game", function() {
     });
 
     describe("Expected outputs", function() {
-        describe("#play()", function() {
-            describe("One player", function() {
-                describe("All strikes", function() {
+        context("#play()", function() {
+            context("One player", function() {
+                let game;
+                let player;
+                beforeEach(function() {
+                    game = new Game();
+                    player = new Player('P1');
+                    game.init([player]);
+                });
+                context("All strikes", function() {
                     it("should have a score of 300", function() {
-                        const player = new Player('P1');
-                        const game = new Game([player]);
                         game.play(new Frame(['X']));
                         game.play(new Frame(['X']));
                         game.play(new Frame(['X']));
@@ -52,10 +61,8 @@ describe("Game", function() {
                     });
                 });
 
-                describe("Starts with a strike", function() {
+                context("Starts with a strike", function() {
                     it("should have a score of 168", function() {
-                        const player = new Player('P1');
-                        const game = new Game([player]);
                         game.play(new Frame(['X']));
                         game.play(new Frame(['7', '/']));
                         game.play(new Frame(['7', '2']));
@@ -70,10 +77,8 @@ describe("Game", function() {
                     });
                 });
 
-                describe("Starts with a spare", function() {
+                context("Starts with a spare", function() {
                     it("should have a score of 170", function() {
-                        const player = new Player('P1');
-                        const game = new Game([player]);
                         game.play(new Frame(['7', '/']));
                         game.play(new Frame(['X']));
                         game.play(new Frame(['7', '2']));
@@ -88,10 +93,8 @@ describe("Game", function() {
                     });
                 });
 
-                describe("Starts with an open frame", function() {
+                context("Starts with an open frame", function() {
                     it("should have a score of 171", function() {
-                        const player = new Player('P1');
-                        const game = new Game([player]);
                         game.play(new Frame(['7', '2']));
                         game.play(new Frame(['7', '/']));
                         game.play(new Frame(['X']));
@@ -107,34 +110,41 @@ describe("Game", function() {
                 });
             });
             describe("Two players", function() {
-                const players = [new Player('P1'), new Player('P2')];
-                const game = new Game(players);
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([1,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([4,2]));
-                game.play(new Frame([4,2]));
-                const board = game.getScoreBoard();
-                it("should return P2 as the winner (higher on chart)", function() {
-                    assert.equal(board[0].player, 'P2');
+                let game;
+                let players;
+                beforeEach(function() {
+                    game = new Game();
+                    players = [new Player('P1'), new Player('P2')];
+                    game.init(players);
                 });
-                it("should have a score of 63", function() {
-                    assert.equal(board[0].score, 63);
+                it("Players 2 gets higher scores", function() {
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([1,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([4,2]));
+                    game.play(new Frame([4,2]));
+                    const board = game.getScoreBoard();
+                    it("should return P2 as the winner (higher on chart)", function() {
+                        assert.equal(board[0].player, 'P2');
+                    });
+                    it("should have a score of 63", function() {
+                        assert.equal(board[0].score, 63);
+                    });
                 });
             });
         });
