@@ -1,18 +1,9 @@
 module.exports = {
     Player: {
-        States: {
-            ONE_STRIKE: 1,
-            ONE_SPARE: 2,
-            TWO_STRIKES: 3,
-            OPEN: 4,
-        },
-
         Consts: {
             LAST_ROUND: 9,
             FULL_FRMAES_PLAYED: 10,
-            OPEN_FRAME_SIZE: 2,
             CLOSED_LAST_FRAME_SIZE: 3,
-            THREE_STRIKES_SCORE: 30,
             CLOSED_FRMAE_SCORE: 10
         },
     },

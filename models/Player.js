@@ -6,8 +6,6 @@ module.exports = class Player {
         this._validateName(name);
         this.name = name;
         this.frames = [];
-        this.rolls = [];
-        this.scores = [];
     }
 
     play(frame) {
