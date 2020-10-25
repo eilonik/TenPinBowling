@@ -32,7 +32,7 @@ describe("Player", function() {
             it("should fail when trying to use a 3 shots frame before the last round", function() {
                 expectException(function() {
                     let player = new Player("Player");
-                    player.play(new Frame(['1', '2', '3']));
+                    player.play([1,2,3]);
                 });
             });
         });    
@@ -47,19 +47,17 @@ describe("Player", function() {
             });
         });
 
-        describe("#getCurrentFrame()", function() {
+        describe("#_getCurrentFrame()", function() {
             it("should return 1 after a closed frame", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1,'/']);
-                player.play(frame);
-                assert.equal(player.getCurrentFrame(), 1);
+                player.play([1,'/']);
+                assert.equal(player._getCurrentFrame(), 1);
             });
     
             it("should return 1 after an open frame", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1, 2]);
-                player.play(frame);
-                assert.equal(player.getCurrentFrame(), 1);
+                player.play([1, 2]);
+                assert.equal(player._getCurrentFrame(), 1);
             });
         });
         
@@ -67,7 +65,7 @@ describe("Player", function() {
         describe("#isDone()", function() {
             it("should return false after less than 10 frames", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1,2]);
+                let frame = [1, 2];
                 player.play(frame);
                 player.play(frame);
                 player.play(frame);
@@ -82,7 +80,7 @@ describe("Player", function() {
     
             it("should return true after 10 frames", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1,2]);
+                let frame = [1, 2];
                 player.play(frame);
                 player.play(frame);
                 player.play(frame);
@@ -97,68 +95,19 @@ describe("Player", function() {
             });
         });
     
-        
-        describe("#getState()", function() {
-            it("should be OPEN after an open frame", function() {
-                let player = new Player("Player");
-                let frame = new Frame([1,2]);
-                player.play(frame);
-                assert.equal(player.getState(), States.OPEN);
-            });
-            
-            it("should be ONE_STRIKE after a strike", function() {
-                let player = new Player("Player");
-                let frame = new Frame(['X']);
-                player.play(frame);
-                assert.equal(player.getState(), States.ONE_STRIKE);
-            });
-    
-            it("should be TWO_STRIKES after 2 strikes", function() {
-                let player = new Player("Player");
-                let frame = new Frame(['X']);
-                player.play(frame);
-                player.play(frame);
-                assert.equal(player.getState(), States.TWO_STRIKES);
-            });
-    
-            it("should be ONE_SPARE after a spare", function() {
-                let player = new Player("Player");
-                let frame = new Frame(['1', '/']);
-                player.play(frame);
-                assert.equal(player.getState(), States.ONE_SPARE);
-            });
-    
-            it("should be OPEN after a strike followed by an open frame", function() {
-                let player = new Player("Player");
-                let strike = new Frame(['X']);
-                let openFrame = new Frame(['1', '2']);
-                player.play(strike);
-                player.play(openFrame);
-                assert.equal(player.getState(), States.OPEN);
-            });
-    
-            it("should be ONE_SPARE after a strike followed by a spare", function() {
-                let player = new Player("Player");
-                let strike = new Frame(['X']);
-                let spare = new Frame(['1', '/']);
-                player.play(strike);
-                player.play(spare);
-                assert.equal(player.getState(), States.ONE_SPARE);
-            });
-        });
     
         describe("#getScore()", function() {
             it("should return 3 after a [1, 2] open frame", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1,2]);
+                let frame = [1, 2];
                 player.play(frame);
                 assert.equal(player.getScore(), 3);
             });
     
             it("should return 3 after a [1, 2] followed by a strike", function() {
                 let player = new Player("Player");
-                let frame = new Frame([1,2]);
-                let strike = new Frame(['X']);
+                let frame = [1, 2];
+                let strike = ['X'];
                 player.play(frame);
                 player.play(strike);
                 assert.equal(player.getScore(), 3);
@@ -166,15 +115,15 @@ describe("Player", function() {
     
             it("should return 0 after a strike", function() {
                 let player = new Player("Player");
-                let strike = new Frame(['X']);
+                let strike = ['X'];
                 player.play(strike);
                 assert.equal(player.getScore(), 0);
             });
     
             it("should return 10 after a strike followed by [0, 0]", function() {
                 let player = new Player("Player");
-                let strike = new Frame(['X']);
-                let frame = new Frame([0, 0]);
+                let strike = ['X'];
+                let frame = [0, 0];
                 player.play(strike);
                 player.play(frame);
                 assert.equal(player.getScore(), 10);
@@ -182,8 +131,8 @@ describe("Player", function() {
             
             it("should return 20 after a strike followed by a spare", function() {
                 let player = new Player("Player");
-                let strike = new Frame(['X']);
-                let spare = new Frame([0, '/']);
+                let strike = ['X'];
+                let spare = [0, '/'];
                 player.play(strike);
                 player.play(spare);
                 assert.equal(player.getScore(), 20);
@@ -191,39 +140,14 @@ describe("Player", function() {
     
             it("should return 20 after a spare followed by a strike", function() {
                 let player = new Player("Player");
-                let strike = new Frame(['X']);
-                let spare = new Frame([0, '/']);
+                let strike = ['X'];
+                let spare = [0, '/'];
                 player.play(spare);
                 player.play(strike);
                 assert.equal(player.getScore(), 20);
             });
         });
-        
-        describe("#processFrame()", function() {
-            it("should increase score by the score of an open frame", function() {
-                let player = new Player("Player");
-                assert.equal(player.score, 0);
-                let frame = new Frame([1, 2]);
-                player.processFrame(frame);
-                assert.equal(player.getScore(), frame.getScore());
-            });
-    
-            it("should not increase score for a spare", function() {
-                let player = new Player("Player");
-                assert.equal(player.score, 0);
-                let frame = new Frame([1, '/']);
-                player.processFrame(frame);
-                assert.equal(player.getScore(), 0);
-            });
-    
-            it("should not increase score for a strike", function() {
-                let player = new Player("Player");
-                assert.equal(player.score, 0);
-                let frame = new Frame(['X']);
-                player.processFrame(frame);
-                assert.equal(player.getScore(), 0);
-            });
-        });
+            
     });
     
 
@@ -266,5 +190,4 @@ describe("Player", function() {
             });
         });
     });
-    
 });

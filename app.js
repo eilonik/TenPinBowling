@@ -2,27 +2,27 @@ const validators = require('./utils/validators');
 const IO = require('./utils/CLI/io');
 const Errors = require('./utils/errors');
 const Player = require('./models/Player');
-const Frame = require('./models/Frame');
 const Game = require('./models/Game');
 const Constants = require('./utils/constants');
 
 const game = new Game();
-// const players = [];
+const players = [];
 
 const makeMove = (input) => {
-    const _frame = new Frame(input);
-    const {player, frame, score} = game.play(_frame);
+    // const _frame = new Frame(input);
+    const {player, frame, score} = game.makeMove(input);
     IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
 };
 
 const readNames = ({input}) => {
-    if (!validators.notEmpty(input)) {
-        input = ["Player"];
-    } else if (!validators.uniqueArray(input)) {
+    if (validators.empty(input)) {
+        players.push(new Player("Player"));
+    } else if (validators.hasDuplicates(input)) {
         IO.error(Errors.Codes.UNIQUE_NAMES);
         return false;
     }
-    return input;
+    input.forEach(name => players.push(new Player(name)));
+    return true;
 };
 
 const readFrame = ({input, channel}) => {
@@ -39,8 +39,7 @@ const readFrame = ({input, channel}) => {
     IO.read(Constants.IO.PROMPT_FRAME, readFrame);
 };
 
-const playGame = (names) => {
-    const players = names.map(name => new Player(name));
+const start = () => {
     game.init(players);
     IO.read(Constants.IO.PROMPT_FRAME, readFrame);
 }
@@ -62,13 +61,9 @@ const formatWinner = (winner) => {
 };
 
 IO.message(Constants.IO.GREETING_MESSAGE);
-IO.read(Constants.IO.PROMPT_NAMES, readNames, playGame);
+IO.read(Constants.IO.PROMPT_NAMES, readNames, start);
 
 // Add use
 // IO.use(msg, readnames, playgame)
 // IO.use(msg, )
 // Keep last output
-
-
-
-

@@ -23,12 +23,12 @@ describe("Game", function() {
             });
         });
 
-        describe("#play()", function() {
+        describe("#makeMove()", function() {
             it("should fail if move is null", function() {
                 expectException(function() {
                     const game = new Game();
                     game.init([new Player("player1")]);
-                    game.play();
+                    game.makeMove();
                 });
             });
         });
@@ -36,7 +36,7 @@ describe("Game", function() {
     });
 
     describe("Expected outputs", function() {
-        context("#play()", function() {
+        context("#makeMove()", function() {
             context("One player", function() {
                 let game;
                 let player;
@@ -47,64 +47,64 @@ describe("Game", function() {
                 });
                 context("All strikes", function() {
                     it("should have a score of 300", function() {
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X','X','X']));
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X','X','X']);
                         assert.equal(player.getScore(), 300);
                     });
                 });
 
                 context("Starts with a strike", function() {
                     it("should have a score of 168", function() {
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['7', '/']));
-                        game.play(new Frame(['7', '2']));
-                        game.play(new Frame(['9', '/']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['2', '3']));
-                        game.play(new Frame(['6', '/']));
-                        game.play(new Frame(['7', '/', '3']));
+                        game.makeMove(['X']);
+                        game.makeMove(['7', '/']);
+                        game.makeMove(['7', '2']);
+                        game.makeMove(['9', '/']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['2', '3']);
+                        game.makeMove(['6', '/']);
+                        game.makeMove(['7', '/', '3']);
                         assert.equal(player.getScore(), 168);
                     });
                 });
 
                 context("Starts with a spare", function() {
                     it("should have a score of 170", function() {
-                        game.play(new Frame(['7', '/']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['7', '2']));
-                        game.play(new Frame(['9', '/']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['2', '3']));
-                        game.play(new Frame(['6', '/']));
-                        game.play(new Frame(['7', '/', '3']));
+                        game.makeMove(['7', '/']);
+                        game.makeMove(['X']);
+                        game.makeMove(['7', '2']);
+                        game.makeMove(['9', '/']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['2', '3']);
+                        game.makeMove(['6', '/']);
+                        game.makeMove(['7', '/', '3']);
                         assert.equal(player.getScore(), 170);
                     });
                 });
 
                 context("Starts with an open frame", function() {
                     it("should have a score of 171", function() {
-                        game.play(new Frame(['7', '2']));
-                        game.play(new Frame(['7', '/']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['9', '/']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['X']));
-                        game.play(new Frame(['2', '3']));
-                        game.play(new Frame(['6', '/']));
-                        game.play(new Frame(['7', '/', '3']));
+                        game.makeMove(['7', '2']);
+                        game.makeMove(['7', '/']);
+                        game.makeMove(['X']);
+                        game.makeMove(['9', '/']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['X']);
+                        game.makeMove(['2', '3']);
+                        game.makeMove(['6', '/']);
+                        game.makeMove(['7', '/', '3']);
                         assert.equal(player.getScore(), 171);
                     });
                 });
@@ -118,26 +118,26 @@ describe("Game", function() {
                     game.init(players);
                 });
                 it("Players 2 gets higher scores", function() {
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([1,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([4,2]));
-                    game.play(new Frame([4,2]));
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([1,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([4,2]);
+                    game.makeMove([4,2]);
                     const board = game.getScoreBoard();
                     it("should return P2 as the winner (higher on chart)", function() {
                         assert.equal(board[0].player, 'P2');

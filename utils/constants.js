@@ -11,19 +11,11 @@ module.exports = {
             LAST_ROUND: 9,
             FULL_FRMAES_PLAYED: 10,
             OPEN_FRAME_SIZE: 2,
-            LAST_FRAME_SIZE: 3,
+            CLOSED_LAST_FRAME_SIZE: 3,
             THREE_STRIKES_SCORE: 30,
         },
     },
 
-    Frame: {
-        Consts: {
-            CLOSED_FRAME_SCORE: 10,
-            LAST_CLOSED_SIZE: 3,
-            OPEN_FRAME_SIZE: 2,
-            STRIKE_SIZE: 1,
-        },
-    },
     IO: {
         Colors: {
             CYAN: "\x1b[36m",

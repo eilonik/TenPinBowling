@@ -1,155 +1,136 @@
-const Frame = require('./Frame');
 const {Consts, States} = require('../utils/constants').Player;
 const Errors = require('../utils/errors');
 module.exports = class Player {
     
     constructor(name) {
-        this.validateName(name);
+        this._validateName(name);
         this.name = name;
-        this.score = 0;
         this.frames = [];
-        this.pendingFrames = [];
+        this.rolls = [];
+        this.scores = [];
     }
 
     play(frame) {
-        this.validateFrame(frame);
-        let state = this.getState();
-        switch (state) {
-            case States.OPEN:
-                this.processFrame(frame);    
-                break;
-            case States.ONE_STRIKE:
-                this.processFrameOneStrike(frame);
-                break;
-            case States.ONE_SPARE:
-                this.processFrameOneSpare(frame);
-                break;
-            case States.TWO_STRIKES:
-                this.processFrameTwoStrikes(frame);
-                break;
-        }
-
-        if (this.isDone()) {
-            if (!frame.isOpen() && frame.size() !== Consts.LAST_FRAME_SIZE) {
-                throw new Error(Errors.Codes.INVALID_LAST_FRAME);
-            }
-            this.score += frame.getScore();
-        }
+        this._validateFrame(frame);
+        frame = frame.map(el => el.toString().toUpperCase());
+        this.frames.push(frame);
+        const parsedFrame = this._parseFrame(frame);
+        this.rolls.push(...frame);
+        this.scores.push(...parsedFrame);
         return this.summary();
-    }
-
-    getCurrentFrame() {
-        return this.frames.length + this.pendingFrames.length;
-    }
-
-    isDone() {
-        return (this.getCurrentFrame() === Consts.FULL_FRMAES_PLAYED);
-    }
-
-    getState() {
-        let length = this.pendingFrames.length;
-        switch(this.pendingFrames.length) {
-            case 0:
-                return States.OPEN;
-                break;
-            case 1:
-                if (this.pendingFrames[0].isStrike()) {
-                    return States.ONE_STRIKE;
-                } else {
-                    return States.ONE_SPARE;
-                }
-                break;
-            case 2:
-                return States.TWO_STRIKES;
-                break;
-        }
-    }
-
-    getScore() {
-        return this.score;
-    }
-
-    processFrame(frame) {
-        if (frame.isOpen()) {
-            this.score += frame.getScore();
-            this.frames.push(frame);
-        } else if (this.getCurrentFrame() === Consts.LAST_ROUND) {
-                this.frames.push(frame);
-        } else {
-            this.pendingFrames.push(frame);
-        }
-    }
-
-    formatFrames() {
-        return this.frames.map(el => el.toString()).join("  ");
     }
 
     summary() {
         return {
             player: this.name,
-            frame: this.getCurrentFrame(),
-            score: this.score,
-            frames: this.formatFrames()
+            frame: this._getCurrentFrame(),
+            score: this.getScore(),
+            frames: this._formatFrames()
         };
     }
 
-    validateFrame(frame) {
+    getScore() {
+        let score = 0;
+        const end = this.rolls.length - (this._isBounsRoll() ? 2 : 1);
+        for (let i = 0; i <= end; i++) {
+            switch (this.rolls[i]) {
+                case 'X':
+                    if (i <= end - 2) {
+                        score += this.scores[i] + this.scores[i + 1] + this.scores[i + 2];
+                    }
+                    break;
+                case '/':
+                    if (i <= end - 1) {
+                        score += this.scores[i] + this.scores[i + 1];
+                    }
+                    break;
+                default:
+                    if (i < end - 1 || this.rolls[i + 1] != '/') {
+                        score += this.scores[i];
+                    }
+                    break;
+            }
+        }
+
+        if (this._isBounsRoll()) {
+            score += this._parseFrame(this.frames[this.frames.length - 1]).reduce((a, b) => a + b, 0);
+        }
+
+        return score;
+    }
+
+    isDone() {
+        return (this._getCurrentFrame() === Consts.FULL_FRMAES_PLAYED);
+    }
+
+    _getCurrentFrame() {
+        return this.frames.length;
+    }
+
+
+    _isLastFrameClosed() {
+        return this.frames[this.frames.length - 1].length === 3;
+    }
+
+    _isBounsRoll() {
+        return (this._getCurrentFrame() === Consts.FULL_FRMAES_PLAYED && this._isLastFrameClosed());
+    }
+
+    _isLastRound() {
+        return this._getCurrentFrame() === Consts.LAST_ROUND;
+    }
+
+    _validateFrame(frame) {
         if (this.isDone()) {
             Errors.throw(Errors.Codes.MAX_FRAMES_EXCEEDED);
         }
 
-        if (!frame) {
+        if (!frame || frame.length === 0) {
             Errors.throw(Errors.Codes.INVALID_FRAME);
         }
 
-        if (frame.size() > Consts.OPEN_FRAME_SIZE && this.getCurrentFrame() !== Consts.LAST_ROUND) {
+        if (frame.length > Consts.OPEN_FRAME_SIZE && !this._isLastRound()) {
             Errors.throw(Errors.Codes.INVALID_FRAME_SIZE);
         }
 
-        if (!frame.isOpen() && this.getCurrentFrame() === Consts.LAST_ROUND && frame.size() !== Consts.LAST_FRAME_SIZE) {
-            Errors.throw(Errors.Codes.INVALID_LAST_FRAME);
+        if (this._isLastRound()) {
+            if (this._isFrameClosed(frame) && frame.length !== Consts.CLOSED_LAST_FRAME_SIZE) {
+                Errors.throw(Errors.Codes.INVALID_LAST_FRAME);
+            }
         }
+        
     }
 
-    validateName(name) {
+    _isFrameClosed(frame) {
+        const _frame = frame.map(el => el.toString().toUpperCase());
+        return (_frame.includes('X') || _frame.includes('/'));
+    }
+
+    _validateName(name) {
         if (!name) {
             Errors.throw(Errors.Codes.INVALID_ARGUMENTS);
         }
     }
 
-    processFrameOneStrike(frame) {
-        let pendingFrame = this.pendingFrames.pop();
-        if (frame.isStrike()) {
-            this.pendingFrames.push(pendingFrame, frame);
-        } else {
-            this.score += pendingFrame.getScore() + frame.getScore();
-            this.frames.push(pendingFrame);
-            this.processFrame(frame);
+    _parseFrame(frame) {
+        const parsed = [];
+        for (let i = 0; i < frame.length; i++) {
+            switch (frame[i]) {
+                case 'X':
+                    parsed.push(10);
+                    break;
+                case '/':
+                    parsed.push(10 - frame[i - 1]);
+                    break;
+                default:
+                    parsed.push(parseInt(frame[i]));
+                    break;
+            }
         }
+        return parsed;
     }
 
-    processFrameOneSpare(frame) {
-        let pendingFrame = this.pendingFrames.pop();
-        this.score += pendingFrame.getScore() + frame.getFirst();
-        this.frames.push(pendingFrame);
-        this.processFrame(frame);
-    }
-
-    /**
-     * 
-     * @param {Frame} frame 
-     */
-    processFrameTwoStrikes(frame) {
-        const [firstPending, secondPending] = this.pendingFrames.splice(0, 2);
-        if (frame.isStrike() && frame.size() <= Consts.OPEN_FRAME_SIZE) {
-            this.score += Consts.THREE_STRIKES_SCORE;
-            this.frames.push(firstPending);
-            this.pendingFrames.push(secondPending, frame);
-        } else  {
-            // Explain scoring
-            this.score += Consts.THREE_STRIKES_SCORE + (2 * frame.getFirst()) + frame.getSecond();
-            this.frames.push(firstPending, secondPending);
-            this.processFrame(frame);
-        }
+    _formatFrames() {
+        return this.frames.map(frame => frame.map(el => el.toUpperCase()).join(",")).join("  ");
     }
 }

@@ -10,11 +10,11 @@ module.exports = class Game {
         this.currentPlayer = this.queue.shift();
     }
 
-    play(frame) {
+    makeMove(frame) {
         this.validateMove(frame);
-        const play = this.currentPlayer.play(frame);
+        const move = this.currentPlayer.play(frame);
         this.switchPlayers();
-        return play;
+        return move;
     }
 
     isDone() {

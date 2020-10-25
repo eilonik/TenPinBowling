@@ -2,34 +2,34 @@ const validators = require('../../utils/validators');
 const assert = require('assert');
 
 describe("Validators", function(){
-    describe("#notEmpty()", function() {
-        it("Should return false for empty input", function() {
-            assert.equal(validators.notEmpty(), false);
+    describe("#empty()", function() {
+        it("Should return true for empty input", function() {
+            assert.equal(validators.empty(), true);
         });
 
-        it("Should return false for empty string", function() {
-            assert.equal(validators.notEmpty(""), false);
+        it("Should return true for empty string", function() {
+            assert.equal(validators.empty(""), true);
         });
 
-        it("Should return false for empty array", function() {
-            assert.equal(validators.notEmpty([]), false);
+        it("Should return true for empty array", function() {
+            assert.equal(validators.empty([]), true);
         });
     });
 
-    describe("#uniqueArray()", function() {
-        it("Should return false an array with duplicates", function() {
-            assert.equal(validators.uniqueArray([1,1,2]), false);
+    describe("#hasDuplicates()", function() {
+        it("Should return true an array with duplicates", function() {
+            assert.equal(validators.hasDuplicates([1,1,2]), true);
         });
 
-        it("Should return true for a unique array", function() {
-            assert.equal(validators.uniqueArray([1,2]), true);
+        it("Should return false for a unique array", function() {
+            assert.equal(validators.hasDuplicates([1,2]), false);
         });
 
-        it("Should return true for an empty array", function() {
-            assert.equal(validators.uniqueArray([]), true);
+        it("Should return false for an empty array", function() {
+            assert.equal(validators.hasDuplicates([]), false);
         });
-        it("Should return false for empty strings", function() {
-            assert.equal(validators.uniqueArray([,,]), false);
+        it("Should return true for empty strings", function() {
+            assert.equal(validators.hasDuplicates([,,]), true);
         });
     });
 });
