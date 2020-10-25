@@ -22,7 +22,17 @@ const frame = (length) => {
     return new Array(frameLength).fill(Consts.IO.THEME_ELEMENT).join("");
 };
 
+const formatWinner = (winner) => {
+    return "🏆 " + winner + " 🏆";
+};
+
+const gameOverMsg = (winner) => { 
+    return `============GAME OVER! ${winner} is the winner!============`
+};
+
 module.exports.list = list;
 module.exports.pad = pad;
 module.exports.prefix = prefix;
 module.exports.frame = frame;
+module.exports.formatWinner = formatWinner;
+module.exports.gameOverMsg = gameOverMsg;
