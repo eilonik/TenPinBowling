@@ -1,6 +1,5 @@
 const assert = require('assert');
-const Player = require('../../models/Player')
-const Frame = require('../../models/Frame')
+const Player = require('../../models/Player');
 const expectException = require('../helpers').expectException;
 const {States} = require('../../utils/constants').Player;
 

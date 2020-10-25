@@ -13,6 +13,7 @@ module.exports = {
             OPEN_FRAME_SIZE: 2,
             CLOSED_LAST_FRAME_SIZE: 3,
             THREE_STRIKES_SCORE: 30,
+            CLOSED_FRMAE_SCORE: 10
         },
     },
 

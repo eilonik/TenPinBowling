@@ -1,7 +1,6 @@
 const assert = require('assert');
 const Game = require('../../models/Game');
 const Player = require('../../models/Player');
-const Frame = require('../../models/Frame');
 const expectException = require('../helpers').expectException;
 
 describe("Game", function() {
