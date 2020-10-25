@@ -8,41 +8,19 @@ const Constants = require('./utils/constants');
 const game = new Game();
 const players = [];
 
+const gameOverMsg = (winner) => { 
+    return `============GAME OVER! ${winner} is the winner!============`
+};
+
+const formatWinner = (winner) => {
+    return "🏆 " + winner + " 🏆";
+};
+
+
 const makeMove = (input) => {
-    // const _frame = new Frame(input);
     const {player, frame, score} = game.makeMove(input);
     IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
 };
-
-const readNames = ({input}) => {
-    if (validators.empty(input)) {
-        players.push(new Player("Player"));
-    } else if (validators.hasDuplicates(input)) {
-        IO.error(Errors.Codes.UNIQUE_NAMES);
-        return false;
-    }
-    input.forEach(name => players.push(new Player(name)));
-    return true;
-};
-
-const readFrame = ({input, channel}) => {
-    try{
-        makeMove(input);
-    } catch (e) {
-        IO.error(e.message);
-        return false;
-    }
-    channel.close();
-    if (game.isDone()) {
-        exit();
-    }
-    IO.read(Constants.IO.PROMPT_FRAME, readFrame);
-};
-
-const start = () => {
-    game.init(players);
-    IO.read(Constants.IO.PROMPT_FRAME, readFrame);
-}
 
 const exit = () => {
     const board = game.getScoreBoard();
@@ -52,18 +30,36 @@ const exit = () => {
     process.exit();
 };
 
-const gameOverMsg = (winner) => { 
-    return `============GAME OVER! ${winner} is the winner!============`
-};
+const play = () => {
+    IO.read(Constants.IO.PROMPT_FRAME, readFrame)
+    .then(play);
+}
 
-const formatWinner = (winner) => {
-    return "🏆 " + winner + " 🏆";
+const readFrame = (input) => {
+    try{
+        makeMove(input);
+    } catch (e) {
+        IO.error(e.message);
+        return false;
+    }
+    if (game.isDone()) {
+        exit();
+    }
+    return true;
 };
 
 IO.message(Constants.IO.GREETING_MESSAGE);
-IO.read(Constants.IO.PROMPT_NAMES, readNames, start);
-
-// Add use
-// IO.use(msg, readnames, playgame)
-// IO.use(msg, )
-// Keep last output
+IO.read(Constants.IO.PROMPT_NAMES, (input) => {
+    if (validators.empty(input)) {
+        players.push(new Player("Player"));
+    } else if (validators.hasDuplicates(input)) {
+        IO.error(Errors.Codes.UNIQUE_NAMES);
+        return false;
+    }
+    input.forEach(name => players.push(new Player(name)));
+    return true;
+})
+.then(() => {
+    game.init(players);
+    play();
+});

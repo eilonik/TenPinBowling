@@ -68,22 +68,22 @@ const createPrompt = () => {
     });
 }
 
-const read = (question, cb, next = null) => {    
-    const channel = createPrompt();
-    channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
-    channel.prompt();
-    channel.on('line', (input) => {
-        input = parse.list(input);
-        done = cb({input, channel});
-        if (!done) {
-            channel.prompt();
-        } else {
-            channel.close();
-            if (next) {
-                next(done);
-            }
-        }  
-    });    
+const read = (question, cb) => {
+    return new Promise((resolve, reject) => {
+        const channel = createPrompt();
+        channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
+        channel.prompt();
+        channel.on('line', (input) => {
+            input = parse.list(input);
+            done = cb(input);
+            if (!done) {
+                channel.prompt();
+            } else {
+                channel.close();
+                resolve();
+            }  
+        }); 
+    });
 };
 
 module.exports.read = read;
