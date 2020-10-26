@@ -2,7 +2,7 @@
 
 TenPinBowling is a Multi-player bowling game.
 
-## Installation
+### Installation
 
 ```
 Bash
