@@ -39,6 +39,10 @@ or
 docker run -it starsig/tenpinbowling:0.0.1
 ```
 
+### Testing
+
+npm test
+
 ### Usage
 
 After running the app, you will be asked to enter the names of the players,  
@@ -61,6 +65,3 @@ with a message describing the error and will be asked to re-play yor move
 
 ### structure
 
-### Testing
-
-npm test
