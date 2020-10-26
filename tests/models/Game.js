@@ -4,8 +4,8 @@ const Player = require('../../models/Player');
 const expectException = require('../helpers').expectException;
 
 describe("Game", function() {
-    describe("Invalid inputs", function() {
-        describe("#init()", function() {
+    context("Invalid inputs", function() {
+        context("#init()", function() {
             beforeEach(function () {
                 const game = new Game();
             })
@@ -22,7 +22,7 @@ describe("Game", function() {
             });
         });
 
-        describe("#makeMove()", function() {
+        context("#makeMove()", function() {
             it("should fail if move is null", function() {
                 expectException(function() {
                     const game = new Game();
@@ -36,25 +36,22 @@ describe("Game", function() {
 
     describe("Expected outputs", function() {
         context("#makeMove()", function() {
+            let game;
+            beforeEach(function() {
+                game = new Game();
+            });
             context("One player", function() {
-                let game;
                 let player;
+                const strike = ['X'];
                 beforeEach(function() {
-                    game = new Game();
                     player = new Player('P1');
                     game.init([player]);
                 });
                 context("All strikes", function() {
                     it("should have a score of 300", function() {
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
-                        game.makeMove(['X']);
+                        for (let i = 0; i < 9; i++) {
+                            game.makeMove(strike);
+                        }
                         game.makeMove(['X','X','X']);
                         assert.equal(player.getScore(), 300);
                     });
@@ -108,35 +105,18 @@ describe("Game", function() {
                     });
                 });
             });
-            describe("Two players", function() {
-                let game;
+            
+            context("Two players", function() {
                 let players;
                 beforeEach(function() {
-                    game = new Game();
                     players = [new Player('P1'), new Player('P2')];
                     game.init(players);
                 });
                 it("Players 2 gets higher scores", function() {
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([1,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([4,2]);
-                    game.makeMove([4,2]);
+                    for (let i = 0; i < 10; i++) {
+                        game.makeMove([1,2]);
+                        game.makeMove([4,2]);
+                    }
                     const board = game.getScoreBoard();
                     it("should return P2 as the winner (higher on chart)", function() {
                         assert.equal(board[0].player, 'P2');
@@ -147,6 +127,189 @@ describe("Game", function() {
                 });
             });
         });
-    });
 
+        context("#isDone", function() {
+            context('One player', function() {
+                let game;
+                let frame = [1,1];
+                beforeEach(function() {
+                    game = new Game();
+                    players = [new Player('P1')];
+                    game.init(players);
+                });
+
+                it("should return false if played less than 10 moves", function() {
+                    for (let i = 0; i < 9; i++) {
+                        game.makeMove(frame);
+                    }
+                    assert.equal(game.isDone(), false);
+                });
+
+                it("should return true if played 10 moves", function() {
+                    for (let i = 0; i < 10; i++) {
+                        game.makeMove(frame);
+                    }
+                    assert.equal(game.isDone(), true);
+                });
+
+            });
+
+            context('Two players', function() {
+                let game;
+                let frame = [1,1];
+                beforeEach(function() {
+                    game = new Game();
+                    players = [new Player('P1'), new Player('P2')];
+                    game.init(players);
+                });
+
+                it("should return false if both played less than 10 moves", function() {
+                    for (let i = 0; i < 18; i++) {
+                        game.makeMove(frame);
+                    }
+                    assert.equal(game.isDone(), false);
+                });
+
+                it("should return false if only one played 10 moves", function() {
+                    for (let i = 0; i < 19; i++) {
+                        game.makeMove(frame);
+                    }
+                    assert.equal(game.isDone(), false);
+                });
+
+                it("should return true if both played 10 moves", function() {
+                    for (let i = 0; i < 20; i++) {
+                        game.makeMove(frame);
+                    }
+                    assert.equal(game.isDone(), true);
+                });
+            });
+        });
+
+        context("#switchPlayer", function() {
+            
+            const playerDone = {
+                name: 'PlayerDone',
+                isDone() {
+                    return true;
+                }
+            };
+            
+            const playerNotDone = {
+                name: 'PlayerNotDone',
+                isDone() {
+                    return false;
+                }
+            };
+            
+            let game;
+            beforeEach(function() {
+                game = new Game();
+            });
+
+            context('One player', function() {
+                context('Player has played 10 frames', function() {
+                    it("Should have null as the current player", function() {
+                        game.init([playerDone]);
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer, null);
+                    });
+                });
+
+                context('Player has played less than 10 frames', function() {
+                    it("Should have a player named PlayerNotDone as the current player after one switch", function() {
+                        game.init([playerNotDone]);
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone');
+                    });
+
+                    it("Should have a player named PlayerNotDone as the current player after two switchs", function() {
+                        game.init([playerNotDone]);
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone');
+                    });
+                });
+            });
+
+            context('Two players', function() {
+                context('Both players played less than 10 frames', function() {
+                    const player1 = Object.assign({}, playerNotDone, {name: 'PlayerNotDone1'});
+                    const player2 = Object.assign({}, playerNotDone, {name: 'PlayerNotDone2'});
+                    beforeEach(function() {
+                        game.init([player1, player2]);
+                    });
+                    it("Should have a player named PlayerNotDone2 as the current player after one switch", function() {
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone2');
+                    });
+
+                    it("Should have a player named PlayerNotDone1 as the current player after two switchs", function() {
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone1');
+                    });
+
+                    it("Should have a player named PlayerNotDone2 as the current player after two switchs", function() {
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone2');
+                    });
+                });
+
+                context('One player played less than 10 frames, the other played 10 frames', function() {
+                    const player1 = Object.assign({}, playerNotDone, {name: 'PlayerNotDone'});
+                    const player2 = Object.assign({}, playerDone, {name: 'PlayerDone'});
+                    beforeEach(function() {
+                        game.init([player1, player2]);
+                    });
+                    it("Should have a player named PlayerDone as the current player after one switch", function() {
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerDone');
+                    });
+
+                    it("Should have a player named PlayerNotDone as the current player after two switchs", function() {
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone');
+                    });
+
+                    it("Should have a player named PlayerNotDone as the current player after two switchs", function() {
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'PlayerNotDone');
+                    });
+                });
+
+                context('Both players played 10 frames', function() {
+                    const player1 = Object.assign({}, playerDone, {name: 'Player1'});
+                    const player2 = Object.assign({}, playerDone, {name: 'Player2'});
+                    beforeEach(function() {
+                        game.init([player1, player2]);
+                    });
+                    it("Should have a player2 named PlayerDone as the current player after one switch", function() {
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer.name, 'Player2');
+                    });
+
+                    it("Should should be null after two switchs", function() {
+                        game.switchPlayers();
+                        game.switchPlayers();
+                        assert.equal(game.currentPlayer, null);
+                    });
+
+                    it("Should should fail after three switchs", function() {
+                        expectException(function() {
+                            game.switchPlayers();
+                            game.switchPlayers();
+                            game.switchPlayers();
+                        });
+                        
+                    });
+                });
+            });
+        });
+    });
 });
