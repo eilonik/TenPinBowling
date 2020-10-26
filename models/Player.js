@@ -45,7 +45,7 @@ module.exports = class Player {
     _validate(frame) {
         this._validateNotDone();
         this._validateNotEmpty(frame);
-        this._validateCharacters(frame);
+        this._validateAllowedCharacters(frame);
         this._validateFrameFormat(frame);
         this._validateBonusFrame(frame);
         this._validateFrameScore(frame);
@@ -69,7 +69,7 @@ module.exports = class Player {
         }
     }
 
-    _validateCharacters(frame) {
+    _validateAllowedCharacters(frame) {
         const allowedCharacters = [...Array(10).keys()].map(el => el.toString()).concat(['X', '/']);
         frame.forEach(el => {
             if (!allowedCharacters.includes(el)) {
