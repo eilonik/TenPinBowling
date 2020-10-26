@@ -1,4 +1,4 @@
-#TenPinBowling
+## TenPinBowling
 
 TenPinBowling is a Multi-player bowling game.
 
