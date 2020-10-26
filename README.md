@@ -50,16 +50,16 @@ or hit enter for a single player.
 Players are assigned in the order they are provided. In each turn,  
 the current player should enter a valid frame, comma seperated.  
 Examples:  
-Open frame: 1,2  
-Spare: 3,/  
-Strike: X  
+-Open frame: 1,2  
+-Spare: 3,/  
+-Strike: X  
 If a closed frame (stike/spare) is provided at the last round,  
 an extra throw is granted. Examples of closed last round:  
-1,/,4  
-X,1,X  
-X,1,1  
-X,X,1   
-X,X,X  
+-1,/,4  
+-X,1,X  
+-X,1,1  
+-X,X,1   
+-X,X,X  
 If an invalid input was given at any stage, you will be prompted   
 with a message describing the error and will be asked to re-play yor move
 
