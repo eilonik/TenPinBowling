@@ -1,4 +1,5 @@
 const {Consts} = require('../utils/constants').Player;
+const Validators = require('../utils/validators');
 const Errors = require('../utils/errors');
 module.exports = class Player {
     
@@ -57,7 +58,7 @@ module.exports = class Player {
     }
 
     _validateNotEmpty(frame) {
-        if (!frame || frame.length === 0) {
+        if (Validators.empty(frame)) {
             Errors.throw(Errors.Codes.INVALID_FRAME);
         }
     }
