@@ -66,3 +66,40 @@ with a message describing the error and will be asked to re-play yor move
 
 ### structure
 
+#### Player class
+
+The Player class holds the state of the player's frames.  
+It recieves a name at the constructor, and a frame for  
+each turn. A turn is played using the *play(frame)* method.  
+It validates the input, adds the frame to it's state, and returns  
+a summary object consists of the player's name, current frame, score,  
+and a string formatted frames state.  
+The score is calculated using the *Player.calculateScore(frames)* method  
+that recieves an array of frames and return the score.  
+It allso has a *isDone()* method that returns true if the player has  
+played 10 frames.
+
+#### Game class
+
+The game class is initialized using the *init(players)* method, and recieves  
+and array of players as an arguments. It initializes a queue of players and  
+holds the current player in each round. A round is played using the *makeMove(frame)*  
+method, that recieves a frame, validates and executes the *play(frame)* move on  
+the current player. If the current player returns false for *isDone()*, it is  
+pushed back to the queue from the end. This class also has a *isDone()* method,  
+that returns true once all players are out of the queue.
+
+#### IO module
+
+The IO module is responsible for the interaction with the players.  
+It has a *read(question, cb)* method that receives a string and a callback  
+function, and returns a promise. It prompts the user with the question  
+argument and expects an input. if the input is valid, the promise is  
+resolved. Otherwise, it keeps asking for an input.  
+This module also has a *message(msg)* method that prints a formatted message  
+to the console, a *table(rows)* method that recieves an array of objects and  
+prints a formatted table to the console, and an *error(msg)* function that  
+prints a formatted error message to the console.
+
+
+I used mocha.js for testings. Tests can be found under the tests directory
