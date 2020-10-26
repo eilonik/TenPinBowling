@@ -2,25 +2,29 @@
 
 ### Description
 
-TenPinBowling is a Multi-player turn based bowling game.
-Each player playes 10 frames, one turn at a time.
-Each frame contains the number of pins that were taken down in it.
+TenPinBowling is a Multi-player turn based bowling game.  
+Each player playes 10 frames, one turn at a time. The goal is to take down  
+as many pins as possible out of 10 in each frame, 1/2 throws at a time, except for  
+the last frame, where it can also be 3 throws.
 
 #### Scoring
 
-- A frame can be open - 2 non-negative integers < 10 each.
-The score of the frame is the sum of those integers.
+- A frame can be open - 2 non-negative integers < 10 each.  
+The score of the frame is the sum of those integers.  
 
-- A frame can be closed - either a strike or a spare. Both strike
-and spare award the player with 10 points, plus a bonus.
-A strike ('X') recieves a bonus of the sum of the next 2 throws.
-A spare (non-negative integer < 10 followed by '/') recieves the
-following throw as a bonus.
+- A frame can be closed - either a strike or a spare. A strike is when all 10  
+pins were taken down at the first shot, and a spare is when 10 pins were taken  
+down within 2 throws. Both strike and spare carry a bonus as follows:  
+A strike ('X') recieves a bonus of the sum of the next 2 throws.  
+A spare (non-negative integer < 10 followed by '/') recieves the  
+following throw as a bonus.  
 
 - A special case is a closed frame in the last round. In that case
-the frame will consist of three throws.
+the frame will consist of three throws. No bonus is awarded for that round
 
-The game ends when all players played all 10 frmaes. 
+The maximum score for the game is 300 (12 strikes in a row)  
+
+The game ends when all players played all 10 frmaes.  
 The winner is the player with the highest score.
 
 ### Installation
