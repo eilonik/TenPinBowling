@@ -7,19 +7,17 @@ const Game = require('./models/Game');
 const Constants = require('./utils/constants');
 
 const game = new Game();
-const players = [];
 
-
-const play = () => {
+const playGame = () => {
     IO.read(Constants.IO.PROMPT_FRAME, readFrame)
-    .then(play);
+    .then(playGame);
 }
 
 const exit = () => {
-    const board = game.getScoreBoard();
-    const winner = board[0].player;
-    board[0].player = Parse.formatWinner(winner);
-    IO.table(board, Parse.gameOverMsg(winner));
+    const scoreBoard = game.getScoreBoard();
+    const winner = scoreBoard[0].player;
+    scoreBoard[0].player = Parse.formatWinner(winner);
+    IO.table(scoreBoard, Parse.gameOverMsg(winner));
     process.exit();
 };
 
@@ -37,19 +35,20 @@ const readFrame = (input) => {
     return true;
 };
 
-IO.message(Constants.IO.GREETING_MESSAGE);
-
-IO.read(Constants.IO.PROMPT_NAMES, (input) => {
+const readNames = (input) => {
     if (validators.empty(input)) {
         players.push(new Player("Player"));
     } else if (validators.hasDuplicates(input)) {
         IO.error(Errors.Codes.UNIQUE_NAMES);
         return false;
     }
+    const players = [];
     input.forEach(name => players.push(new Player(name)));
-    return true;
-})
-.then(() => {
     game.init(players);
-    play();
-});
+    return true;
+};
+
+IO.message(Constants.IO.GREETING_MESSAGE);
+
+IO.read(Constants.IO.PROMPT_NAMES, readNames)
+.then(playGame);
