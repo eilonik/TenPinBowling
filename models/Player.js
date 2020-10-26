@@ -10,7 +10,7 @@ module.exports = class Player {
 
     play(frame) {
         frame = frame.map(el => el.toString().toUpperCase());
-        this._validateFrame(frame);
+        this._validate(frame);
         this.frames.push(frame);
         return this.summary();
     }
@@ -41,7 +41,7 @@ module.exports = class Player {
         return this._getCurrentFrame() === Consts.LAST_ROUND;
     }
 
-    _validateFrame(frame) {
+    _validate(frame) {
         this._validateNotDone();
         this._validateNotEmpty(frame);
         this._validateCharacters(frame);
