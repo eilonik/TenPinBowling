@@ -6,8 +6,6 @@ const Player = require('./models/Player');
 const Game = require('./models/Game');
 const Constants = require('./utils/constants');
 
-const game = new Game();
-
 const exit = () => {
     const scoreBoard = game.getScoreBoard();
     const winner = scoreBoard[0].player;
@@ -42,6 +40,8 @@ const playGame = () => {
     IO.read(Constants.IO.PROMPT_FRAME, readFrame)
     .then(playGame);
 }
+
+const game = new Game();
 
 IO.message(Constants.IO.GREETING_MESSAGE);
 
