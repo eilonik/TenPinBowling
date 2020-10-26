@@ -15,7 +15,7 @@ Docker
 docker run -it starsig/tenpinbowling:0.0.1
 ```
 
-## Usage
+### Usage
 
 After running the app, you will be asked to enter the names of the players, or hit enter
 for a single player.
@@ -29,6 +29,6 @@ If a closed frame (stike/spare) is provided at the last round, an extra throw is
 If an invalid input was given at any stage, you will be prompt with a descriptive message and will be asked to re-play yor move
 
 
-## Testing
+### Testing
 
 npm test
