@@ -7,15 +7,15 @@ Each player playes 10 frames, one turn at a time. Each frame contains the number
 
 #### Scoring
 
-A frame can be open - 2 non-negative integers < 10 each.
+- A frame can be open - 2 non-negative integers < 10 each.
 The score of the frame is the sum of those integers.
 
-A frame can be closed - either a strike or a spare. Both strike and spare 
+- A frame can be closed - either a strike or a spare. Both strike and spare 
 award the player with 10 points, plus a bonus.
 A strike ('X') recieves a bonus of the sum of the next 2 throws.
 A spare (non-negative integer < 10 followed by '/') recieves the following throw as a bonus.
 
-A special case is a closed frame in the last round. In that case the frame will consist of
+- A special case is a closed frame in the last round. In that case the frame will consist of
 three throws.
 
 The game ends when all players played all 10 frmaes. 
