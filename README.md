@@ -3,10 +3,7 @@
 ### Description
 
 TenPinBowling is a Multi-player turn based bowling game.
-
-Each player playes 10 frames, one turn at a time.
-
-Each frame contains the number of pins that were hit in it.
+Each player playes 10 frames, one turn at a time. Each frame contains the number of pins that were taken down in it.
 
 #### Scoring
 
