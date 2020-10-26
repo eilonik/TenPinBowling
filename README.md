@@ -4,12 +4,14 @@ TenPinBowling is a Multi-player bowling game.
 
 ## Installation
 
-```Bash
+```
+Bash
 npm install
 node app.js
 ```
 
-```Docker
+```
+Docker
 docker run -it starsig/tenpinbowling:0.0.1
 ```
 
