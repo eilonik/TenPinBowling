@@ -53,6 +53,8 @@ If a closed frame (stike/spare) is provided at the last round,
 an extra throw is granted. Examples of closed last round:  
 1,/,4  
 X,1,X  
+X,1,1
+X,X,1   
 X,X,X  
 If an invalid input was given at any stage, you will be prompted   
 with a message describing the error and will be asked to re-play yor move
