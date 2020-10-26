@@ -8,11 +8,6 @@ const Constants = require('./utils/constants');
 
 const game = new Game();
 
-const playGame = () => {
-    IO.read(Constants.IO.PROMPT_FRAME, readFrame)
-    .then(playGame);
-}
-
 const exit = () => {
     const scoreBoard = game.getScoreBoard();
     const winner = scoreBoard[0].player;
@@ -49,6 +44,11 @@ const readNames = (input) => {
 };
 
 IO.message(Constants.IO.GREETING_MESSAGE);
+
+const playGame = () => {
+    IO.read(Constants.IO.PROMPT_FRAME, readFrame)
+    .then(playGame);
+}
 
 IO.read(Constants.IO.PROMPT_NAMES, readNames)
 .then(playGame);
