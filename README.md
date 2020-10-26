@@ -1,41 +1,32 @@
 #TenPinBowling
 
-============
+TenPinBowling is a Multi-player bowling game.
 
-Description:
+## Installation
 
-Multi-player bowling game.
+```Bash
+npm install
+node app.js
+```
 
-=============
+```Docker
+docker run -it starsig/tenpinbowling:0.0.1
+```
 
-Setup:
+## Usage
 
-Bash:
-1. npm install
-2. node app.js
-
-Docker:
-1. docker pull starsig/tenpinbowling:0.0.1 
-2. docker run -it starsig/tenpinbowling:0.0.1
-
-============
-
-Testing:
-
-npm test
-
-============
-
-Usage:
-
-You will first be asked to enter the names of the players, or hit enter
+After running the app, you will be asked to enter the names of the players, or hit enter
 for a single player.
-Players are assigned at the order they are given. In each turn, the current
-player should enter a frame, comma seperated.
+Players are assigned in the order they are provided. In each turn, the current
+player should enter a valid frame, comma seperated.
 Examples:
 Open frame: 1,2
 Spare: 3,/
 Strike: X
-Last round closed frame (spare/strike), extra throw is granted: 1,/,4 X,1,X, X,X,X
-If an invalid input was given, you will be prompt with a descriptive message and be asked 
-to re-play yor move
+If a closed frame (stike/spare) is provided at the last round, an extra throw is granted: 1,/,4 X,1,X, X,X,X
+If an invalid input was given at any stage, you will be prompt with a descriptive message and will be asked to re-play yor move
+
+
+## Testing
+
+npm test
