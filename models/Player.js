@@ -93,13 +93,13 @@ module.exports = class Player {
                 this._validateRegularFrameFormat(frame);
                 break;
             case 3:
-                this._validateLastFrameFormat(frame);
+                this._validateClosedLastFrameFormat(frame);
                 break;
         }
         this._validateSpareFormat(frame);
     }
 
-    _validateLastFrameFormat(frame) {
+    _validateClosedLastFrameFormat(frame) {
         if (!this._isLastRound()) {
             Errors.throw(Errors.Codes.INVALID_LAST_FRAME);
         }

@@ -1,6 +1,6 @@
 ## TenPinBowling
 
-TenPinBowling is a Multi-player bowling game.
+TenPinBowling is a Multi-player turn based bowling game.
 
 ### Installation
 

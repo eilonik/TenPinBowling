@@ -17,13 +17,8 @@ const exit = () => {
 };
 
 const readFrame = (input) => {
-    try{
-        const {player, frame, score} = game.makeMove(input);
-        IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
-    } catch (e) {
-        IO.error(e.message);
-        return false;
-    }
+    const {player, frame, score} = game.makeMove(input);
+    IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
     if (game.isDone()) {
         exit();
     }
@@ -32,10 +27,10 @@ const readFrame = (input) => {
 
 const readNames = (input) => {
     if (validators.empty(input)) {
-        players.push(new Player("Player"));
-    } else if (validators.hasDuplicates(input)) {
-        IO.error(Errors.Codes.UNIQUE_NAMES);
-        return false;
+        input.push("Player");
+    }
+    if (validators.hasDuplicates(input)) {
+        Errors.throw(Errors.Codes.UNIQUE_NAMES);
     }
     const players = [];
     input.forEach(name => players.push(new Player(name)));
@@ -43,12 +38,12 @@ const readNames = (input) => {
     return true;
 };
 
-IO.message(Constants.IO.GREETING_MESSAGE);
-
 const playGame = () => {
     IO.read(Constants.IO.PROMPT_FRAME, readFrame)
     .then(playGame);
 }
+
+IO.message(Constants.IO.GREETING_MESSAGE);
 
 IO.read(Constants.IO.PROMPT_NAMES, readNames)
 .then(playGame);

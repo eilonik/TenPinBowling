@@ -69,19 +69,20 @@ const createPrompt = () => {
 }
 
 const read = (question, cb) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const channel = createPrompt();
         channel.setPrompt(Colors.PROMPT + question + " " + Consts.THEME_ELEMENT + " " + Colors.RESET);
         channel.prompt();
         channel.on('line', (input) => {
             input = parse.list(input);
-            done = cb(input);
-            if (!done) {
-                channel.prompt();
-            } else {
+            try {
+                done = cb(input);
                 channel.close();
                 resolve();
-            }  
+            } catch (e) {
+                error(e);
+                channel.prompt();
+            } 
         }); 
     });
 };
