@@ -54,7 +54,8 @@ Examples:
 -Spare: 3,/  
 -Strike: X  
 If a closed frame (stike/spare) is provided at the last round,  
-an extra throw is granted. Examples of closed last round:  
+an extra throw is granted.  
+Examples of closed last round:  
 -1,/,4  
 -X,1,X  
 -X,1,1  
