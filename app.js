@@ -6,7 +6,7 @@ const Player = require('./models/Player');
 const Game = require('./models/Game');
 const Constants = require('./utils/constants');
 
-const exit = () => {
+const exit = (game) => {
     const scoreBoard = game.getScoreBoard();
     const winner = scoreBoard[0].player;
     scoreBoard[0].player = Parse.formatWinner(winner);
@@ -14,16 +14,7 @@ const exit = () => {
     process.exit();
 };
 
-const readFrame = (input) => {
-    const {player, frame, score} = game.makeMove(input);
-    IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
-    if (game.isDone()) {
-        exit();
-    }
-    return true;
-};
-
-const readNames = (input) => {
+const readPlayers = (input) => {
     if (validators.empty(input)) {
         input.push("Player");
     }
@@ -32,18 +23,25 @@ const readNames = (input) => {
     }
     const players = [];
     input.forEach(name => players.push(new Player(name)));
-    game.init(players);
-    return true;
+    return players;
 };
 
-const playGame = () => {
-    IO.read(Constants.IO.PROMPT_FRAME, readFrame)
-    .then(playGame);
-}
-
-const game = new Game();
+const run = async () => {
+    const players = await IO.read(Constants.IO.PROMPT_NAMES, readPlayers);
+    const game = new Game();
+    game.init(players);
+    while (!game.isDone()) {
+        const frameInput = await IO.read(Constants.IO.PROMPT_FRAME, input => input);
+        try {
+            const {player, frame, score} = game.makeMove(frameInput);
+            IO.message(`Player: ${player} | Frame: ${frame} | Score: ${score}`);
+        } catch (e) {
+            IO.error(e);
+        }
+    }
+    exit(game);
+};
 
 IO.message(Constants.IO.GREETING_MESSAGE);
 
-IO.read(Constants.IO.PROMPT_NAMES, readNames)
-.then(playGame);
+run();

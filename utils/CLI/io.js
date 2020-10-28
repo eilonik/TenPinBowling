@@ -76,9 +76,9 @@ const read = (question, cb) => {
         channel.on('line', (input) => {
             input = parse.list(input);
             try {
-                done = cb(input);
+                const done = cb(input);
                 channel.close();
-                resolve();
+                resolve(done);
             } catch (e) {
                 error(e);
                 channel.prompt();
